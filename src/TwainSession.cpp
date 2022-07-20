@@ -7,6 +7,8 @@
 #include <chrono>
 #include <thread>
 
+Napi::Function globalCallback;
+Napi::Env globalEnv;
 
 TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSession>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
@@ -94,8 +96,10 @@ Napi::Value TwainSession::openDataSource(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSession::addEventListener(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-    Napi::Function cb = info[0].As<Napi::Function>();
-    cb.Call(env.Global(), {Napi::String::New(env, "hello world")});
+    globalCallback = info[0].As<Napi::Function>();
+    globalEnv = env;
+    globalCallback.Call(env.Global(), {Napi::String::New(env, "hello world")});
+    setCallback();
 
     return Napi::Boolean::New(env, true);
 }
@@ -1863,5 +1867,6 @@ TW_UINT16 FAR PASCAL TwainSession::DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTIT
     std::cout << "DG :" << convertDataGroupToString(uiDG) << std::endl;
     std::cout << "DAT:" << convertDataArgTypeToString(uiDAT) << std::endl;
     std::cout << "MSG:" << convertMessageToString(uiMSG) << std::endl;
+    globalCallback.Call(globalEnv.Global(), {Napi::String::New(globalEnv, "callbackkkkkk")});
     return TWRC_SUCCESS;
 }
