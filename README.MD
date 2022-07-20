@@ -41,11 +41,5 @@ const arrayTest = app.getCapability(twain.CAP_SUPPORTEDCAPS)    // array
 app.scan();
 ```
 
-## Install
-
-```bash
-npm i node-twain
-```
-
 ## License
 MIT License. See the LICENSE file.
