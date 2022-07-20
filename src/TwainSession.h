@@ -27,6 +27,8 @@ typedef void *HWND;
 class TwainSession : public Napi::ObjectWrap<TwainSession> {
 
 public:
+    static TwainSession *instance;
+
     TwainSession(const Napi::CallbackInfo &info);
 
     virtual Napi::Value getState(const Napi::CallbackInfo &info);
@@ -67,8 +69,6 @@ private:
     TW_UINT32 instanceID;
     TW_IMAGEINFO imageInfo;
     TW_USERINTERFACE ui;
-
-    static TwainSession *instance;
 
     /**
      * state 1 -> 2
