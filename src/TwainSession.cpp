@@ -8,7 +8,7 @@
 #include <thread>
 
 Napi::Function globalCallback;
-Napi::Env globalEnv;
+Napi::Env globalEnv = NULL;
 
 TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSession>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
