@@ -29,6 +29,10 @@ Napi::Function registerTwainSession(Napi::Env env) {
                     "getCapability",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
+            TwainSession::InstanceMethod<&TwainSession::addEventListener>(
+                    "addEventListener",
+                    static_cast<napi_property_attributes>(napi_writable | napi_configurable)
+            ),
             TwainSession::InstanceMethod<&TwainSession::test>(
                     "test",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
