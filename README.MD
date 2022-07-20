@@ -15,13 +15,30 @@ NOTE: Project is under develop.
 ```typescript
 import {Twain} from "node-twain"
 
-const twain = new Twain()               // state 1 -> state 2
-twain.openDataSourceManager()           // state 2 -> state 3
-const list = twain.getDataSources()     // state 3
-twain.openDataSource(ds)                // state 3 -> state 4
-twain.enableDataSource(ds)              // state 4 -> state 5
+const app = new twain.TwainSession( {
+    productName: "productName!",
+    productFamily: "productFamily!",
+    manufacturer: "manufacturer!",
+    version: {
+        country: twain.TWCY_CHINA,
+        language: twain.TWLG_CHINESE,
+        majorNum: 1,
+        minorNum: 1,
+        info: "v0.0.1",
+    }
+})
+const sources = app.getDataSources()            // ["PaperStream IP SP-1120N #2"]
+const defaultSource = app.getDefaultSource()    // "PaperStream IP SP-1120N #2"
+app.setDefaultSource(sources[0])
 
-twain.closeDataSourceManager()
+await app.openDataSource()
+
+const enumTest = app.getCapability(twain.ICAP_XFERMECH)         // Enum
+const oneValueTest = app.getCapability(twain.CAP_AUTHOR)        // one value
+const rangeTest = app.getCapability(twain.ICAP_JPEGQUALITY)     // range
+const arrayTest = app.getCapability(twain.CAP_SUPPORTEDCAPS)    // array
+
+app.scan();
 ```
 
 ## License
