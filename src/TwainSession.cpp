@@ -85,11 +85,11 @@ Napi::Value TwainSession::openDataSource(const Napi::CallbackInfo &info) {
     TW_UINT16 rc = TWRC_SUCCESS;
     rc = this->openDS() & rc;
     rc = this->setCallback() & rc;
-//    if (rc == TWRC_SUCCESS) {
-//        rc = this->enableDS(NULL);
-//    }
-//    std::this_thread::sleep_for(std::chrono::seconds(15));
-//    this->scan();
+    if (rc == TWRC_SUCCESS) {
+        rc = this->enableDS(NULL);
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    this->scan(TWSX_FILE);
     deferred.Resolve(Napi::String::New(info.Env(), "OK"));
     return deferred.Promise();
 }
@@ -1867,6 +1867,5 @@ TW_UINT16 FAR PASCAL TwainSession::DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTIT
     std::cout << "DG :" << convertDataGroupToString(uiDG) << std::endl;
     std::cout << "DAT:" << convertDataArgTypeToString(uiDAT) << std::endl;
     std::cout << "MSG:" << convertMessageToString(uiMSG) << std::endl;
-    globalCallback.Call(globalEnv.Global(), {Napi::String::New(globalEnv, "callbackkkkkk")});
     return TWRC_SUCCESS;
 }
