@@ -525,6 +525,7 @@ TW_UINT16 TwainSession::callback(TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMS
     std::cout << "DG :" << convertDataGroupToString(uiDG) << std::endl;
     std::cout << "DAT:" << convertDataArgTypeToString(uiDAT) << std::endl;
     std::cout << "MSG:" << convertMessageToString(uiMSG) << std::endl;
+    return TWRC_SUCCESS;
 }
 
 TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
