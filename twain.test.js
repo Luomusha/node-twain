@@ -47,6 +47,11 @@ describe('twain', () => {
         console.log("RANGE    :", JSON.stringify(rangeTest))
         console.log("ARRAY    :", JSON.stringify(arrayTest))
 
+        const callback = (message) => {
+            console.log(message)
+        }
+        app.addEventListener(callback)
+
         const result = await app.test()
         console.log(result);
     })

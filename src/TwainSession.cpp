@@ -92,6 +92,14 @@ Napi::Value TwainSession::openDataSource(const Napi::CallbackInfo &info) {
     return deferred.Promise();
 }
 
+Napi::Value TwainSession::addEventListener(const Napi::CallbackInfo &info) {
+    Napi::Env env = info.Env();
+    Napi::Function cb = info[0].As<Napi::Function>();
+    cb.Call(env.Global(), {Napi::String::New(env, "hello world")});
+
+
+}
+
 Napi::Value TwainSession::getCapability(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     TW_UINT16 CAP = info[0].As<Napi::Number>().Uint32Value();
