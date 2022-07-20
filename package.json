@@ -8,7 +8,7 @@
     "url": "git+https://github.com/luomusha/node-twain.git"
   },
   "scripts": {
-    "start": "node-gyp configure build",
+    "start": "node-gyp configure build --debug",
     "tsc": "tsc -w",
     "test": "jest --watch"
   },

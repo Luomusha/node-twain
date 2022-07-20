@@ -7,18 +7,21 @@ NOTE: Project is under develop.
 ## Installation
 ``$ npm install node-twain``
 
+## Twain flow
+![img.png](assets/img.png)
+
 ## Usage
 
 ```typescript
 import {Twain} from "node-twain"
 
-const twain = new Twain()
+const twain = new Twain()               // state 1 -> state 2
+twain.openDataSourceManager()           // state 2 -> state 3
+const list = twain.getDataSources()     // state 3
+twain.openDataSource(ds)                // state 3 -> state 4
+twain.enableDataSource(ds)              // state 4 -> state 5
 
-twain.connectDSM()  // state 1 -> state 2 -> 3
-twain.listDS()      // state 3
-twain.connectDS()   // state 3 -> state 4
-twain.enableDS()
-
+twain.closeDataSourceManager()
 ```
 
 ## License
