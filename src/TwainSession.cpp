@@ -205,10 +205,18 @@ Napi::Value TwainSession::setCapability(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     TW_UINT16 CAP = info[0].As<Napi::Number>().Uint32Value();
     TW_UINT16 ITEM_TYPE = info[0].As<Napi::Number>().Uint32Value();
+    TW_HANDLE hResult = NULL;
+    switch(ITEM_TYPE) {
+        case TWTY_STR32:
+        case TWTY_STR64:
+        case TWTY_STR128:
+        case TWTY_STR255:
+            hResult = allocMemory(sizeof(TW_ONEVALUE) + getTWTypeSize(ITEM_TYPE));
+        default:
+            hResult = allocMemory(sizeof(TW_ONEVALUE));
+    }
 
-    TW_HANDLE hResult = allocMemory(sizeof(TW_ONEVALUE));
-
-    pTW_ONEVALUE pOne = static_cast<pTW_ONEVALUE>(lockMemory(hResult));
+    pTW_ONEVALUE pOne = (pTW_ONEVALUE)(lockMemory(hResult));
     pOne->ItemType = ITEM_TYPE;
     unlockMemory(hResult);
     pOne = NULL;
@@ -1768,6 +1776,65 @@ const std::string TwainSession::convertConTypeToString(const TW_UINT16 value) {
             text = "Unknown";
     }
     return text;
+}
+
+const int TwainSession::getTWTypeSize(const TW_UINT16 itemType) {
+    int typeSize = 0;
+
+    switch(itemType)
+    {
+        case TWTY_INT8:
+            typeSize = sizeof(TW_INT8);
+            break;
+        case TWTY_INT16:
+            typeSize = sizeof(TW_INT16);
+            break;
+        case TWTY_INT32:
+            typeSize = sizeof(TW_INT32);
+            break;
+        case TWTY_UINT8:
+            typeSize = sizeof(TW_UINT8);
+            break;
+        case TWTY_UINT16:
+            typeSize = sizeof(TW_UINT16);
+            break;
+        case TWTY_UINT32:
+            typeSize = sizeof(TW_UINT32);
+            break;
+        case TWTY_BOOL:
+            typeSize = sizeof(TW_BOOL);
+            break;
+        case TWTY_FIX32:
+            typeSize = sizeof(TW_FIX32);
+            break;
+        case TWTY_FRAME:
+            typeSize = sizeof(TW_FRAME);
+            break;
+        case TWTY_STR32:
+            typeSize = sizeof(TW_STR32);
+            break;
+        case TWTY_STR64:
+            typeSize = sizeof(TW_STR64);
+            break;
+        case TWTY_STR128:
+            typeSize = sizeof(TW_STR128);
+            break;
+        case TWTY_STR255:
+            typeSize = sizeof(TW_STR255);
+            break;
+        case TWTY_STR1024:
+            typeSize = sizeof(TW_STR1024);
+            break;
+        case TWTY_UNI512:
+            typeSize = sizeof(TW_UNI512);
+            break;
+        case TWTY_HANDLE:
+            typeSize = sizeof(TW_HANDLE);
+            break;
+        default:
+            break;
+    }
+    return typeSize;
 }
 
 TW_FIX32 TwainSession::floatToFix32(float floater) {
