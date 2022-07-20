@@ -7,9 +7,6 @@
 #include <chrono>
 #include <thread>
 
-Napi::Function globalCallback;
-Napi::Env globalEnv = NULL;
-
 TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSession>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
     Napi::Object version = configure.Get("version").As<Napi::Object>();
@@ -36,6 +33,7 @@ TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Tw
     identity.ProtocolMinor = TWON_PROTOCOLMINOR;
 
     parent = NULL;
+    instance = this;
 
     Napi::Env env = info.Env();
     TW_UINT16 rc = TWRC_FAILURE;
@@ -96,9 +94,8 @@ Napi::Value TwainSession::openDataSource(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSession::addEventListener(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-    globalCallback = info[0].As<Napi::Function>();
-    globalEnv = env;
-    globalCallback.Call(env.Global(), {Napi::String::New(env, "hello world")});
+    Napi::Function cb = info[0].As<Napi::Function>();
+    cb.Call(env.Global(), {Napi::String::New(env, "hello world")});
     setCallback();
 
     return Napi::Boolean::New(env, true);
@@ -522,6 +519,12 @@ TW_UINT16 TwainSession::setCallback() {
     callback.CallBackProc = (TW_MEMREF) DSMCallback;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF) &callback, &source);
     return rc;
+}
+
+TW_UINT16 TwainSession::callback(TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG) {
+    std::cout << "DG :" << convertDataGroupToString(uiDG) << std::endl;
+    std::cout << "DAT:" << convertDataArgTypeToString(uiDAT) << std::endl;
+    std::cout << "MSG:" << convertMessageToString(uiMSG) << std::endl;
 }
 
 TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
@@ -1862,10 +1865,8 @@ float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
     return float(fix32.Whole) + float(fix32.Frac / 65536.0);
 }
 
-TW_UINT16 FAR PASCAL TwainSession::DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG,
-                          TW_MEMREF pData) {
-    std::cout << "DG :" << convertDataGroupToString(uiDG) << std::endl;
-    std::cout << "DAT:" << convertDataArgTypeToString(uiDAT) << std::endl;
-    std::cout << "MSG:" << convertMessageToString(uiMSG) << std::endl;
+TW_UINT16 FAR PASCAL TwainSession::DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
+    std::cout << "Trigger callback" << std::endl;
+    instance->callback(uiDG, uiDAT, uiMSG);
     return TWRC_SUCCESS;
 }

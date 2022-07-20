@@ -68,6 +68,8 @@ private:
     TW_IMAGEINFO imageInfo;
     TW_USERINTERFACE ui;
 
+    static TwainSession *instance;
+
     /**
      * state 1 -> 2
      * @return
@@ -105,6 +107,8 @@ private:
     TW_UINT16 setCap(TW_UINT16 Cap, const int value, TW_UINT16 type);
 
     TW_UINT16 setCallback();
+
+    TW_UINT16 callback(TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG);
 
     /**
      * state 4 -> 5
