@@ -1,7 +1,7 @@
 {
   "name": "node-twain",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "A TWAIN library for nodejs.",
   "main": "index.ts",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
     "test": "jest --watch"
   },
   "keywords": [],
-  "author": "",
+  "author": "Luomusha",
   "license": "ISC",
   "devDependencies": {
     "@types/bindings": "^1.5.1",
