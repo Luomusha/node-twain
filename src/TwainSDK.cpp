@@ -246,9 +246,14 @@ Napi::Value TwainSDK::setCapability(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
     TW_UINT16 rc = session.enableDS(NULL);
-
-    return Napi::Boolean::New(info.Env(), true);
+    if (rc == TWRC_SUCCESS) {
+        deferred.Resolve(Napi::String::New(info.Env(), "OK"));
+    } else {
+        deferred.Reject(Napi::String::New(info.Env(), "Reject"));
+    }
+    return deferred.Promise();
 }
 
 Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
@@ -264,7 +269,7 @@ TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW
             session.state = 6;
             break;
     }
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::this_thread::sleep_for(std::chrono::seconds(12));
 
     callback.Call({Napi::Number::New(callback.Env(), uiMSG)});
     return TWRC_SUCCESS;

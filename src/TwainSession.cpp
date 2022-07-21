@@ -75,7 +75,13 @@ TW_UINT16 TwainSession::freeDSM() {
 TW_UINT16 TwainSession::entry(TW_UINT32 DG, TW_UINT16 DAT, TW_UINT16 MSG, TW_MEMREF pData, pTW_IDENTITY pDataSource) {
     TW_UINT16 rc = TWRC_FAILURE;
     status.ConditionCode = TWCC_SUCCESS;
-
+    std::cout << "Before:"
+              << convertDataGroupToString(DG)
+              << " / "
+              << convertDataArgTypeToString(DAT)
+              << " / "
+              << convertMessageToString(MSG)
+              << std::endl;
     rc = dsmEntry(&identity, pDataSource, DG, DAT, MSG, pData);
     std::cout << "Triplet:"
               << convertDataGroupToString(DG)
