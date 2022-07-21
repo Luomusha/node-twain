@@ -4,7 +4,7 @@
 
 #include "TwainSDK.h"
 
-Napi::Function callback;
+Napi::FunctionReference callback;
 
 TwainSDK::TwainSDK(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSDK>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
@@ -100,7 +100,7 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::addEventListener(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-    callback = info[0].As<Napi::Function>();
+    callback = Napi::Persistent(info[0].As<Napi::Function>());
     session.setCallback();
     return Napi::Boolean::New(env, true);
 }
@@ -258,8 +258,6 @@ Napi::Value TwainSDK::test(const Napi::CallbackInfo &info) {
 
 TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
     std::cout << "Trigger callback" << std::endl;
-    std::string in = "hello";
-    EventEmitter* wk = new EventEmitter(callback, in);
-    wk->Queue();
+    callback.Call({Napi::Number::New(callback.Env(), uiMSG)});
     return TWRC_SUCCESS;
 }
