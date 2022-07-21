@@ -8,7 +8,6 @@
 #include <thread>
 
 Napi::FunctionReference TwainSession::callback;
-Napi::Env TwainSession::env;
 
 TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSession>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
@@ -100,7 +99,7 @@ Napi::Value TwainSession::openDataSource(const Napi::CallbackInfo &info) {
 }
 
 Napi::Value TwainSession::addEventListener(const Napi::CallbackInfo &info) {
-    env = info.Env();
+    Napi::Env env = info.Env();
     callback = Napi::Persistent(info[0].As<Napi::Function>());
     return Napi::Boolean::New(env, true);
 }
@@ -1882,6 +1881,6 @@ float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
 
 TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
     std::cout << "Trigger callback" << std::endl;
-    callback.Call({Napi::Number::New(env, uiMSG)});
+    callback.Call({Napi::Number::New(Env().Undefined(), uiMSG)});
     return TWRC_SUCCESS;
 }
