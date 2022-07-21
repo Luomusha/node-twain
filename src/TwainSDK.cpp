@@ -63,7 +63,11 @@ Napi::Value TwainSDK::getDefaultSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
 
     TW_UINT16 rc = session.getDefaultDS();
-    return Napi::String::New(env, reinterpret_cast<char *>(session.source.ProductName));
+    Napi::String str = Napi::String::New(env, "");
+    if(rc == TWRC_SUCCESS) {
+        str = Napi::String::New(env, reinterpret_cast<char *>(session.source.ProductName));
+    }
+    return str;
 }
 
 Napi::Value TwainSDK::setDefaultSource(const Napi::CallbackInfo &info) {
