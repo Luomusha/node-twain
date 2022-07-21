@@ -98,9 +98,7 @@ Napi::Value TwainSession::openDataSource(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSession::addEventListener(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-    Napi::Function cb = info[0].As<Napi::Function>();
-    cb.Call(env.Global(), {Napi::String::New(env, "hello world")});
-    setCallback();
+    callback = Napi::Persistent(info[0].As<Napi::Function>());
 
     return Napi::Boolean::New(env, true);
 }
@@ -245,6 +243,7 @@ Napi::Value TwainSession::setCapability(const Napi::CallbackInfo &info) {
 Napi::Value TwainSession::test(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
 
+    callback.Call({});
     return Napi::Boolean::New(env, true);
 }
 
@@ -537,13 +536,6 @@ TW_UINT16 TwainSession::setCallback() {
     callback.CallBackProc = (TW_MEMREF) DSMCallback;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF) &callback, &source);
     return rc;
-}
-
-TW_UINT16 TwainSession::callback(TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG) {
-    std::cout << "DG :" << convertDataGroupToString(uiDG) << std::endl;
-    std::cout << "DAT:" << convertDataArgTypeToString(uiDAT) << std::endl;
-    std::cout << "MSG:" << convertMessageToString(uiMSG) << std::endl;
-    return TWRC_SUCCESS;
 }
 
 TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
@@ -1886,6 +1878,6 @@ float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
 
 TW_UINT16 FAR PASCAL TwainSession::DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
     std::cout << "Trigger callback" << std::endl;
-//    instance->callback(uiDG, uiDAT, uiMSG);
+//    instance->callback.Call(Napi::Number::New(uiDG), Napi::Number::New(uiDAT), Napi::Number::New(uiMSG));
     return TWRC_SUCCESS;
 }
