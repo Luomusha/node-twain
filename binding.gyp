@@ -2,7 +2,7 @@
   "targets": [
     {
       "target_name": "twain",
-      "sources": [ "src/main.cpp", "src/TwainSession.cpp", "src/TwainSDK.cpp" ],
+      "sources": [ "src/main.cpp", "src/TwainSession.cpp", "src/TwainSDK.cpp", "src/EventEmitter.cpp" ],
       "include_dirs": ["<!(node -p \"require('node-addon-api').include_dir\")"],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],

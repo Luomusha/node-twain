@@ -1,16 +1,8 @@
 //
 // Created by Lossa on 2022/7/4.
 //
+#include <napi.h>
 #include "TwainSession.h"
-
-TwainSession::TwainSession() {
-
-}
-
-TwainSession::~TwainSession() {
-    closeDS();
-    freeDSM();
-}
 
 void TwainSession::fillIdentity(TW_IDENTITY id) {
     identity = id;

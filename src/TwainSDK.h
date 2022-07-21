@@ -7,11 +7,14 @@
 
 #include <napi.h>
 #include "TwainSession.h"
+#include "EventEmitter.h"
 
 class TwainSDK : public Napi::ObjectWrap<TwainSDK> {
 public:
 
     TwainSDK(const Napi::CallbackInfo &info);
+
+    ~TwainSDK();
 
     virtual Napi::Value getState(const Napi::CallbackInfo &info);
 

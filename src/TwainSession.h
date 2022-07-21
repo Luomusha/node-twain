@@ -29,10 +29,6 @@ public:
     TW_IDENTITY source;                 //set Source by user
     TW_INT16 state = 1;
 
-    TwainSession();
-
-    ~TwainSession();
-
     void fillIdentity(TW_IDENTITY id);
 
     /**
