@@ -250,9 +250,9 @@ Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, true);
 }
 
-Napi::Value TwainSDK::test(const Napi::CallbackInfo &info) {
+Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-
+    session.scan(TWSX_MEMORY);
     return Napi::Boolean::New(env, true);
 }
 

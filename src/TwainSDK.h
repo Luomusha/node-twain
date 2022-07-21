@@ -34,7 +34,7 @@ public:
 
     virtual Napi::Value enableDataSource(const Napi::CallbackInfo &info);
 
-    virtual Napi::Value test(const Napi::CallbackInfo &info);
+    virtual Napi::Value scan(const Napi::CallbackInfo &info);
 
 private:
     TwainSession session;
