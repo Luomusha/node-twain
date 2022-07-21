@@ -42,6 +42,8 @@ TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Tw
 }
 
 TwainSession::~TwainSession() {
+    instance = NULL;
+    parent = NULL;
     closeDS();
     freeDSM();
 }
