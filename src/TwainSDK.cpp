@@ -265,13 +265,3 @@ Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, true);
 }
 
-TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
-    std::cout << "Trigger callback" << std::endl;
-    switch(uiMSG) {
-        case MSG_XFERREADY:
-            session.state = 6;
-            break;
-    }
-    callback.Call({Napi::Number::New(callback.Env(), uiMSG)});
-    return TWRC_SUCCESS;
-}

@@ -27,7 +27,8 @@ class TwainSession {
 public:
     std::vector <TW_IDENTITY> sources;
     TW_IDENTITY source;                 //set Source by user
-    TW_INT16 state = 1;
+    TW_UINT16 state = 1;
+    TW_UINT16 message;
 
     void fillIdentity(TW_IDENTITY id);
 
