@@ -1639,14 +1639,3 @@ TW_FIX32 TwainSession::floatToFix32(float floater) {
 float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
     return float(fix32.Whole) + float(fix32.Frac / 65536.0);
 }
-
-TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
-    std::cout << "Trigger callback" << std::endl;
-    message = uiMSG;
-    switch(uiMSG) {
-        case MSG_XFERREADY:
-            session.state = 6;
-            break;
-    }
-    return TWRC_SUCCESS;
-}

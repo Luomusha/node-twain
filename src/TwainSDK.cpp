@@ -6,6 +6,7 @@
 
 Napi::FunctionReference callback;
 TwainSession session;
+TW_UINT16 message;
 
 TwainSDK::TwainSDK(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSDK>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
@@ -265,3 +266,13 @@ Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
     return Napi::Boolean::New(env, true);
 }
 
+TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
+    std::cout << "Trigger callback" << std::endl;
+    message = uiMSG;
+    switch(uiMSG) {
+        case MSG_XFERREADY:
+            session.state = 6;
+            break;
+    }
+    return TWRC_SUCCESS;
+}

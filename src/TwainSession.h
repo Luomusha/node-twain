@@ -21,7 +21,6 @@ typedef void *HWND;
 
 
 #define LIBRARY "/Library/Frameworks/TWAINDSM.framework/Versions/Current/TWAINDSM"
-TW_UINT16 message;
 
 class TwainSession {
 
