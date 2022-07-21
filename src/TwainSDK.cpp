@@ -83,9 +83,10 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
     rc = session.openDS() & rc;
     rc = session.setCallback() & rc;
     if (rc == TWRC_SUCCESS) {
-        rc = session.enableDS(NULL);
+        deferred.Resolve(Napi::String::New(info.Env(), "OK"));
+    } else {
+        deferred.Reject(Napi::String::New(info.Env(), "Reject"))
     }
-    deferred.Resolve(Napi::String::New(info.Env(), "OK"));
     return deferred.Promise();
 }
 
