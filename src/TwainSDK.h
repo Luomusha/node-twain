@@ -36,6 +36,30 @@ public:
     virtual Napi::Value enableDataSource(const Napi::CallbackInfo &info);
 
     virtual Napi::Value scan(const Napi::CallbackInfo &info);
+private:
+    TwainSession session;
+};
+
+
+class TwainWorker : public Napi::AsyncWorker {
+public:
+    TwainWorker(Napi::Function& callback, std::string& echo)
+            : AsyncWorker(callback), echo(echo) {}
+
+    ~TwainWorker() {}
+    // This code will be executed on the worker thread
+    void Execute() override {
+        // Need to simulate cpu heavy task
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+
+    void OnOK() override {
+        Napi::HandleScope scope(Env());
+        Callback().Call({Env().Null(), Napi::String::New(Env(), echo)});
+    }
+
+private:
+    std::string echo;
 };
 
 

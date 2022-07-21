@@ -4,10 +4,6 @@
 
 #include "TwainSDK.h"
 
-Napi::FunctionReference callback;
-TwainSession session;
-TW_UINT16 message;
-
 TwainSDK::TwainSDK(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSDK>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
 
@@ -101,7 +97,13 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::addEventListener(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-    callback = Napi::Persistent(info[0].As<Napi::Function>());
+
+    Napi::Function cb = info[1].As<Napi::Function>();
+    std::string in = "info[0].As<Napi::String>()";
+    TwainWorker* wk = new TwainWorker(cb, in);
+    wk->Queue();
+
+
     session.setCallback();
     return Napi::Boolean::New(env, true);
 }
@@ -268,10 +270,8 @@ Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
 
 TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
     std::cout << "Trigger callback" << std::endl;
-    message = uiMSG;
     switch(uiMSG) {
         case MSG_XFERREADY:
-            session.state = 6;
             break;
     }
     return TWRC_SUCCESS;
