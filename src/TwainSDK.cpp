@@ -88,8 +88,7 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
 
-    TW_UINT16 rc = TWRC_SUCCESS;
-    rc = session.openDS() & rc;
+    TW_UINT16 rc = session.openDS();
     if (rc == TWRC_SUCCESS) {
         deferred.Resolve(Napi::String::New(info.Env(), "OK"));
     } else {
@@ -246,8 +245,15 @@ Napi::Value TwainSDK::setCapability(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
+    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
     session.enableDS(NULL);
-    return Napi::Boolean::New(env, true);
+    if (rc == TWRC_SUCCESS) {
+        deferred.Resolve(Napi::String::New(info.Env(), "OK"));
+    } else {
+        deferred.Reject(Napi::String::New(info.Env(), "Reject"));
+    }
+    return deferred.Promise();
 }
 
 Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
