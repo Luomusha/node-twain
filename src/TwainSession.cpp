@@ -33,7 +33,6 @@ TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Tw
     identity.ProtocolMinor = TWON_PROTOCOLMINOR;
 
     parent = NULL;
-    instance = this;
 
     Napi::Env env = info.Env();
     TW_UINT16 rc = TWRC_FAILURE;
@@ -536,15 +535,9 @@ TW_UINT16 TwainSession::setCallback() {
     }
     TW_CALLBACK callback = {0};
     callback.RefCon = 0;
-    callback.CallBackProc = (TW_MEMREF) NULL;
+    callback.CallBackProc = (TW_MEMREF) dsmCallback;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF) &callback, &source);
     return rc;
-}
-
-TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
-    std::cout << "Trigger callback" << std::endl;
-//    instance->callback.Call(Napi::Number::New(uiDG), Napi::Number::New(uiDAT), Napi::Number::New(uiMSG));
-    return TWRC_SUCCESS;
 }
 
 TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
@@ -1883,4 +1876,10 @@ TW_FIX32 TwainSession::floatToFix32(float floater) {
 
 float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
     return float(fix32.Whole) + float(fix32.Frac / 65536.0);
+}
+
+TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
+    std::cout << "Trigger callback" << std::endl;
+    callback.Call({});
+    return TWRC_SUCCESS;
 }

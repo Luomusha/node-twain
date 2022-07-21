@@ -67,8 +67,7 @@ private:
     TW_STATUS status;
     TW_IMAGEINFO imageInfo;
     TW_USERINTERFACE ui;
-    Napi::FunctionReference callback;
-    TwainSession *instance;
+    static Napi::FunctionReference callback;
 
     /**
      * state 1 -> 2
@@ -107,8 +106,6 @@ private:
     TW_UINT16 setCap(TW_UINT16 Cap, const int value, TW_UINT16 type);
 
     TW_UINT16 setCallback();
-
-    TW_UINT16 dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData);
 
     /**
      * state 4 -> 5
@@ -157,6 +154,9 @@ private:
     static float fix32ToFloat(const TW_FIX32& fix32);
 
     static TW_FIX32 floatToFix32(float floater);
+
+    static TW_UINT16 dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData);
+
 };
 
 
