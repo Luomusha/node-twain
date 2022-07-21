@@ -259,6 +259,6 @@ Napi::Value TwainSDK::test(const Napi::CallbackInfo &info) {
 TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
     std::cout << "Trigger callback" << std::endl;
     EventEmitter* ee = new EventEmitter(callback, Napi::Number::New(uiMSG));
-    ee.Queue();
+    ee->Queue();
     return TWRC_SUCCESS;
 }
