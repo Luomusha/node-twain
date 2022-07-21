@@ -33,6 +33,11 @@ TwainSDK::TwainSDK(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSDK>(
     identity.SupportedGroups = DF_APP2 | DG_IMAGE | DG_CONTROL;
     identity.ProtocolMajor = TWON_PROTOCOLMAJOR;
     identity.ProtocolMinor = TWON_PROTOCOLMINOR;
+
+    session.fillIdentity(identity);
+
+    session.loadDSM();     // state 1 -> state 2
+    session.openDSM();     // state 2 -> state 3
 }
 
 Napi::Value TwainSDK::getState(const Napi::CallbackInfo &info) {

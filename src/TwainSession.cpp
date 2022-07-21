@@ -4,11 +4,7 @@
 #include "TwainSession.h"
 
 TwainSession::TwainSession() {
-    parent = NULL;
 
-    TW_UINT16 rc = TWRC_FAILURE;
-    this->loadDSM();     // state 1 -> state 2
-    this->openDSM();     // state 2 -> state 3
 }
 
 TwainSession::~TwainSession() {
