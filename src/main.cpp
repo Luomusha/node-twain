@@ -36,8 +36,8 @@ Napi::Function registerTwainSDK(Napi::Env env) {
                     "enableDataSource",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
-            TwainSDK::InstanceMethod<&TwainSDK::test>(
-                    "test",
+            TwainSDK::InstanceMethod<&TwainSDK::scan>(
+                    "scan",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
     });

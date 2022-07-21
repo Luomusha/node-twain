@@ -7,7 +7,6 @@
 
 #include <napi.h>
 #include "TwainSession.h"
-#include "EventEmitter.h"
 
 class TwainSDK : public Napi::ObjectWrap<TwainSDK> {
 public:
