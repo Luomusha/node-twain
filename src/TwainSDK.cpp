@@ -98,7 +98,7 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
 Napi::Value TwainSDK::addEventListener(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
 
-    Napi::Function cb = info[1].As<Napi::Function>();
+    Napi::Function cb = info[0].As<Napi::Function>();
     std::string in = "info[0].As<Napi::String>()";
     TwainWorker* wk = new TwainWorker(cb, in);
     wk->Queue();
