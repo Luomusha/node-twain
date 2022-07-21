@@ -248,7 +248,7 @@ Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
 
-    session.enableDS(NULL);
+    TW_UINT16 rc = session.enableDS(NULL);
     if (rc == TWRC_SUCCESS) {
         deferred.Resolve(Napi::String::New(info.Env(), "OK"));
     } else {
