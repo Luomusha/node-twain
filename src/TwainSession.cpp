@@ -33,7 +33,6 @@ TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Tw
     identity.ProtocolMinor = TWON_PROTOCOLMINOR;
 
     parent = NULL;
-    instance = this;
 
     Napi::Env env = info.Env();
     TW_UINT16 rc = TWRC_FAILURE;
@@ -1873,6 +1872,6 @@ float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
 
 TW_UINT16 FAR PASCAL TwainSession::DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
     std::cout << "Trigger callback" << std::endl;
-    instance->callback(uiDG, uiDAT, uiMSG);
+//    instance->callback(uiDG, uiDAT, uiMSG);
     return TWRC_SUCCESS;
 }

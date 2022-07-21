@@ -27,8 +27,6 @@ typedef void *HWND;
 class TwainSession : public Napi::ObjectWrap<TwainSession> {
 
 public:
-    static TwainSession *instance;
-
     TwainSession(const Napi::CallbackInfo &info);
 
     ~TwainSession();
