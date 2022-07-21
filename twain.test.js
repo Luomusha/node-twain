@@ -1,4 +1,5 @@
 const bindings = require('bindings')
+const {TwainSDK} = require("*twain");
 const twain = bindings("twain")
 
 describe('twain', () => {
@@ -13,7 +14,7 @@ describe('twain', () => {
     })
 
     it('Twain class"', async () => {
-        const app = new twain.TwainSession( {
+        const app = new twain.TwainSDK( {
             productName: "productName!",
             productFamily: "productFamily!",
             manufacturer: "manufacturer!",

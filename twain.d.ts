@@ -590,7 +590,7 @@ declare module "*twain" {
     const ICAP_JPEGSUBSAMPLING: number
     const ACAP_XFERMECH: number
 
-    declare class TwainSession {
+    declare class TwainSDK {
         state: number = 1
 
         constructor()
