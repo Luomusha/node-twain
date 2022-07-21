@@ -10,6 +10,7 @@
 
 class TwainSDK : public Napi::ObjectWrap<TwainSDK> {
 public:
+
     TwainSDK(const Napi::CallbackInfo &info);
 
     virtual Napi::Value getState(const Napi::CallbackInfo &info);
@@ -31,7 +32,6 @@ public:
     virtual Napi::Value test(const Napi::CallbackInfo &info);
 
 private:
-    static Napi::FunctionReference callback;
     TwainSession session;
 };
 
