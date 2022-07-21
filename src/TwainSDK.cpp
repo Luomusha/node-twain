@@ -85,7 +85,6 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
 
     TW_UINT16 rc = TWRC_SUCCESS;
     rc = session.openDS() & rc;
-    rc = session.setCallback() & rc;
     if (rc == TWRC_SUCCESS) {
         deferred.Resolve(Napi::String::New(info.Env(), "OK"));
     } else {
@@ -97,6 +96,7 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
 Napi::Value TwainSDK::addEventListener(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     callback = Napi::Persistent(info[0].As<Napi::Function>());
+    session.setCallback();
     return Napi::Boolean::New(env, true);
 }
 
