@@ -6,6 +6,8 @@
 #define NODE_TWAIN_TWAINSDK_H
 
 #include <napi.h>
+#include <chrono>
+#include <thread>
 #include "TwainSession.h"
 
 class TwainSDK : public Napi::ObjectWrap<TwainSDK> {

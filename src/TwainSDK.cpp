@@ -246,9 +246,7 @@ Napi::Value TwainSDK::setCapability(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-    std::cout << "enableDataSource start" << std::endl;
     TW_UINT16 rc = session.enableDS(NULL);
-    std::cout << "enableDataSource end" << std::endl;
 
     return Napi::Boolean::New(info.Env(), true);
 }
@@ -266,6 +264,8 @@ TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW
             session.state = 6;
             break;
     }
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
     callback.Call({Napi::Number::New(callback.Env(), uiMSG)});
     return TWRC_SUCCESS;
 }
