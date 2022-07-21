@@ -42,10 +42,16 @@ describe('twain', () => {
         const oneValueTest = app.getCapability(twain.CAP_AUTHOR)  // one value
         const rangeTest = app.getCapability(twain.ICAP_JPEGQUALITY)        // range
         const arrayTest = app.getCapability(twain.CAP_SUPPORTEDCAPS)    // array
-        console.log("ENUM     :", JSON.stringify(enumTest))
-        console.log("ONE_VALUE:", JSON.stringify(oneValueTest))
-        console.log("RANGE    :", JSON.stringify(rangeTest))
-        console.log("ARRAY    :", JSON.stringify(arrayTest))
+        expect(enumTest).toHaveProperty("currentIndex")
+        expect(enumTest).toHaveProperty("defaultIndex")
+        expect(enumTest).toHaveProperty("itemList")
+        expect(rangeTest).toHaveProperty("minValue")
+        expect(rangeTest).toHaveProperty("maxValue")
+        expect(rangeTest).toHaveProperty("stepSize")
+        expect(rangeTest).toHaveProperty("defaultValue")
+        expect(rangeTest).toHaveProperty("currentValue")
+        expect(Array.isArray(arrayTest)).toBeTruthy()
+        expect(oneValueTest).toBeTruthy()
 
         const callback = (message) => {
             console.log("callback MSG:", message)

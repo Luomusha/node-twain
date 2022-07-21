@@ -17,20 +17,22 @@ type TW_IDENTITY = {
     ProductName: string
 }
 
-type CAP_ARRAY = {
+type CAP_ARRAY = string;
 
-}
-
-type CAP_VALUE = {
-
-}
+type CAP_VALUE = Number[]
 
 type CAP_ENUM = {
-
+    currentIndex: number;
+    defaultIndex: number;
+    itemList: Number[];
 }
 
 type CAP_RANGE = {
-
+    minValue: number;
+    maxvalue: number;
+    stepSize: number;
+    defaultValue: number;
+    currentValue: number;
 }
 
 type Capability = CAP_RANGE | CAP_ENUM | CAP_VALUE | CAP_ARRAY;
