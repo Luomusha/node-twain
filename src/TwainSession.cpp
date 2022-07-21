@@ -117,7 +117,9 @@ Napi::Value TwainSession::getCapability(const Napi::CallbackInfo &info) {
 // Array                                   x      x       x       x                                              x      x
 // Enumeration   x           x                    x       x       x                     x                        x      x
 // Range                     x      x             x       x                                                      x
-
+    if(rc != TWRC_SUCCESS) {
+        return Napi::Boolean::New(env, false);
+    }
     if (cap.ConType == TWON_RANGE) {
         pTW_RANGE pRange = (pTW_RANGE) lockMemory(cap.hContainer);
         Napi::Object rangeResult = Napi::Object::New(env);
@@ -373,7 +375,7 @@ TW_UINT16 TwainSession::closeDSM() {
 TW_UINT16 TwainSession::getDefaultDS() {
     if (state < 3) {
         std::cout << "You need to open the DSM first." << std::endl;
-        return NULL;
+        return TWRC_FAILURE;
     }
     memset(&source, 0, sizeof(TW_IDENTITY));
     TW_UINT16 rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_GETDEFAULT, (TW_MEMREF) &source);
@@ -389,10 +391,10 @@ TW_UINT16 TwainSession::getDefaultDS() {
 TW_UINT16 TwainSession::setDefaultDS(std::string name) {
     if (state < 3) {
         std::cout << "You need to open the DSM first." << std::endl;
-        return NULL;
+        return TWRC_FAILURE;
     } else if (state > 3) {
         std::cout << "A source has already been opened, please close it first." << std::endl;
-        return NULL;
+        return TWRC_FAILURE;
     }
     TW_UINT16 rc = TWRC_FAILURE;
 
@@ -1810,7 +1812,7 @@ const std::string TwainSession::convertConTypeToString(const TW_UINT16 value) {
     return text;
 }
 
-const int TwainSession::getTWTypeSize(const TW_UINT16 itemType) {
+int TwainSession::getTWTypeSize(const TW_UINT16 itemType) {
     int typeSize = 0;
 
     switch(itemType)

@@ -149,7 +149,7 @@ private:
 
     static const std::string convertConTypeToString(const TW_UINT16 value);
 
-    static const int getTWTypeSize(const TW_UINT16 itemType);
+    static int getTWTypeSize(const TW_UINT16 itemType);
 
     static float fix32ToFloat(const TW_FIX32& fix32);
 
