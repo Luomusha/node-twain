@@ -533,9 +533,15 @@ TW_UINT16 TwainSession::setCallback() {
     }
     TW_CALLBACK callback = {0};
     callback.RefCon = 0;
-    callback.CallBackProc = (TW_MEMREF) DSMCallback;
+    callback.CallBackProc = (TW_MEMREF) &this->DSMCallback;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF) &callback, &source);
     return rc;
+}
+
+TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
+    std::cout << "Trigger callback" << std::endl;
+//    instance->callback.Call(Napi::Number::New(uiDG), Napi::Number::New(uiDAT), Napi::Number::New(uiMSG));
+    return TWRC_SUCCESS;
 }
 
 TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
@@ -567,7 +573,7 @@ TW_UINT16 TwainSession::disableDS() {
 }
 
 TW_UINT16 TwainSession::getImageInfo() {
-    memset(&imageInfo, NULL, sizeof(imageInfo));
+    memset(&imageInfo, 0, sizeof(imageInfo));
     std::cout << "Getting the image info..." << std::endl;
     TW_UINT16 rc = entry(DG_IMAGE, DAT_IMAGEINFO, MSG_GET, (TW_MEMREF) &imageInfo, pSource);
     if (rc == TWRC_SUCCESS) {
@@ -680,7 +686,7 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
             std::cout << "file saved..." << fileXfer.FileName << std::endl;
             std::cout << "Checking to see if there are more images to transfer..." << std::endl;
             TW_PENDINGXFERS pendXfers;
-            memset(&pendXfers, NULL, sizeof(pendXfers));
+            memset(&pendXfers, 0, sizeof(pendXfers));
             rc = entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF) &pendXfers);
 
             if (rc == TWRC_SUCCESS) {
@@ -740,7 +746,7 @@ void TwainSession::transferMemory() {
 
         while (true) {
             memcpy(&memXferBuf, &memXferBufferTemplate, sizeof(memXferBufferTemplate));
-            memset(memXferBuf.Memory.TheMem, NULL, memXferBuf.Memory.Length);
+            memset(memXferBuf.Memory.TheMem, 0, memXferBuf.Memory.Length);
 
             rc = entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, (TW_MEMREF) &(memXferBuf));
             if (rc == TWRC_SUCCESS || rc == TWRC_XFERDONE) {
@@ -1874,10 +1880,4 @@ TW_FIX32 TwainSession::floatToFix32(float floater) {
 
 float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
     return float(fix32.Whole) + float(fix32.Frac / 65536.0);
-}
-
-TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
-    std::cout << "Trigger callback" << std::endl;
-//    instance->callback.Call(Napi::Number::New(uiDG), Napi::Number::New(uiDAT), Napi::Number::New(uiMSG));
-    return TWRC_SUCCESS;
 }
