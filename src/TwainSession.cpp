@@ -341,10 +341,10 @@ TW_UINT16 TwainSession::getImageInfo() {
 }
 
 TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
-//    if(state != 6) {
-//        std::cout << "A scan cannot be initiated unless we are in state 6" << std::endl;
-//        return TWRC_FAILURE;
-//    }
+    if(state != 6) {
+        std::cout << "A scan cannot be initiated unless we are in state 6" << std::endl;
+        return TWRC_FAILURE;
+    }
 
     TW_UINT16 rc = getImageInfo();
     if (TWRC_SUCCESS != rc) {
