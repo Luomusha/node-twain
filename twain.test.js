@@ -53,7 +53,7 @@ describe('twain', () => {
         }
         app.addEventListener(callback)
 
-        app.enableDataSource()
+        await app.enableDataSource()
     })
 })
 

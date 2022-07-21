@@ -601,7 +601,7 @@ declare module "*twain" {
         openDataSource: () => Promise<void>;
         getCapability: (capability: number) => Capability;
         addEventListener: (callback: () => void) => void;
-        enableDataSource: () => void;
+        enableDataSource: () => Promise<void>;
         scan: () => void;
     }
 }
