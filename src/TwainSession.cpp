@@ -8,6 +8,7 @@
 #include <thread>
 
 Napi::FunctionReference TwainSession::callback;
+Napi::Env TwainSession::env;
 
 TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSession>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
