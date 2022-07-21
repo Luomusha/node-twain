@@ -32,6 +32,10 @@ Napi::Function registerTwainSDK(Napi::Env env) {
                     "addEventListener",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
+            TwainSDK::InstanceMethod<&TwainSDK::enableDataSource>(
+                    "enableDataSource",
+                    static_cast<napi_property_attributes>(napi_writable | napi_configurable)
+            ),
             TwainSDK::InstanceMethod<&TwainSDK::test>(
                     "test",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
