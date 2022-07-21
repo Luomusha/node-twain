@@ -49,13 +49,6 @@ public:
     virtual Napi::Value test(const Napi::CallbackInfo &info);
 
 private:
-    TW_INT16 state = 1;
-    TW_IDENTITY identity;
-    TW_IDENTITY source;                 //set Source by user
-    pTW_IDENTITY pSource;               //set source by DS
-    HWND parent;
-    std::vector <TW_IDENTITY> sources;
-
 #ifdef TWH_CMP_MSC
     HMODULE
 #else
@@ -64,6 +57,13 @@ private:
             pDSMLibrary = 0;
     DSMENTRYPROC dsmEntry = 0;
     TW_ENTRYPOINT gDSMEntry = {0};
+    TW_INT16 state = 1;
+    TW_IDENTITY identity;
+    TW_IDENTITY source;                 //set Source by user
+    pTW_IDENTITY pSource;               //set source by DS
+    HWND parent;
+    std::vector <TW_IDENTITY> sources;
+
     TW_STATUS status;
     TW_IMAGEINFO imageInfo;
     TW_USERINTERFACE ui;
@@ -106,6 +106,8 @@ private:
     TW_UINT16 setCap(TW_UINT16 Cap, const int value, TW_UINT16 type);
 
     TW_UINT16 setCallback();
+
+    TW_UINT16 dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData);
 
     /**
      * state 4 -> 5
@@ -154,9 +156,6 @@ private:
     static float fix32ToFloat(const TW_FIX32& fix32);
 
     static TW_FIX32 floatToFix32(float floater);
-
-    TW_UINT16 dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData);
-
 };
 
 
