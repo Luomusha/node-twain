@@ -68,6 +68,7 @@ private:
     TW_IMAGEINFO imageInfo;
     TW_USERINTERFACE ui;
     Napi::FunctionReference callback;
+    TwainSession *instance;
 
     /**
      * state 1 -> 2

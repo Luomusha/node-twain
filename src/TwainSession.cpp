@@ -33,6 +33,7 @@ TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Tw
     identity.ProtocolMinor = TWON_PROTOCOLMINOR;
 
     parent = NULL;
+    instance = this;
 
     Napi::Env env = info.Env();
     TW_UINT16 rc = TWRC_FAILURE;
@@ -535,7 +536,7 @@ TW_UINT16 TwainSession::setCallback() {
     }
     TW_CALLBACK callback = {0};
     callback.RefCon = 0;
-    callback.CallBackProc = (TW_MEMREF) &this->dsmCallback;
+    callback.CallBackProc = (TW_MEMREF) NULL;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF) &callback, &source);
     return rc;
 }
