@@ -13,7 +13,7 @@ class EventEmitter : public Napi::AsyncWorker {
 public:
     EventEmitter(Napi::Function &callback, std::string &echo) : AsyncWorker(callback), echo(echo) {}
 
-    ~EventEmitter();
+    ~EventEmitter() {};
 
     void Execute() override {
         std::this_thread::sleep_for(std::chrono::seconds(1));
