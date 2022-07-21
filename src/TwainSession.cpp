@@ -305,7 +305,9 @@ TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
     ui.ShowUI = false;
     ui.ModalUI = false;
     ui.hParent = hParent;
+    std::cout << "enableDS start" << std::endl;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_USERINTERFACE, MSG_ENABLEDS, (TW_MEMREF) &ui, pSource);
+    std::cout << "enableDS end" << std::endl;
     if (rc == TWRC_SUCCESS) {
         state = 5;
     }
