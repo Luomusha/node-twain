@@ -1882,6 +1882,6 @@ float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
 
 TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
     std::cout << "Trigger callback" << std::endl;
-    callback.Call(Napi::Number::New(uiMSG));
+    callback.Call({Napi::Number::New(uiMSG)});
     return TWRC_SUCCESS;
 }
