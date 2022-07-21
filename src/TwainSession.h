@@ -31,6 +31,8 @@ public:
 
     TwainSession(const Napi::CallbackInfo &info);
 
+    ~TwainSession();
+
     virtual Napi::Value getState(const Napi::CallbackInfo &info);
 
     virtual Napi::Value getDataSources(const Napi::CallbackInfo &info);

@@ -41,6 +41,11 @@ TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Tw
     rc = this->openDSM();     // state 2 -> state 3
 }
 
+TwainSession::~TwainSession() {
+    closeDS();
+    freeDSM();
+}
+
 Napi::Value TwainSession::getState(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
 
