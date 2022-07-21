@@ -29,6 +29,8 @@ public:
 
     virtual Napi::Value setCapability(const Napi::CallbackInfo &info);
 
+    virtual Napi::Value enableDataSource(const Napi::CallbackInfo &info);
+
     virtual Napi::Value test(const Napi::CallbackInfo &info);
 
 private:
