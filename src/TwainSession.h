@@ -22,7 +22,7 @@ typedef void *HWND;
 
 
 #define LIBRARY "/Library/Frameworks/TWAINDSM.framework/Versions/Current/TWAINDSM"
-
+typedef TW_UINT16 (*pCallback)(TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG);
 
 class TwainSession : public Napi::ObjectWrap<TwainSession> {
 
@@ -69,6 +69,7 @@ private:
     TW_UINT32 instanceID;
     TW_IMAGEINFO imageInfo;
     TW_USERINTERFACE ui;
+    static pCallback instance;
 
     /**
      * state 1 -> 2
