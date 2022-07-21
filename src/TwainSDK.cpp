@@ -246,7 +246,9 @@ Napi::Value TwainSDK::setCapability(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
+    std::cout << "enableDataSource start" << std::endl;
     TW_UINT16 rc = session.enableDS(NULL);
+    std::cout << "enableDataSource end" << std::endl;
 
     return Napi::Boolean::New(info.Env(), true);
 }
