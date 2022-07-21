@@ -1,5 +1,4 @@
 const bindings = require('bindings')
-const {TwainSDK} = require("*twain");
 const twain = bindings("twain")
 
 describe('twain', () => {
