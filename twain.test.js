@@ -48,7 +48,7 @@ describe('twain', () => {
         console.log("ARRAY    :", JSON.stringify(arrayTest))
 
         const callback = (message) => {
-            console.log(message)
+            console.log("callback MSG:", message)
         }
         app.addEventListener(callback)
 
