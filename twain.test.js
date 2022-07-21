@@ -54,7 +54,7 @@ describe('twain', () => {
 
         const result = await app.test()
         console.log(result);
-
+        app.enableDataSource()
     })
 })
 
