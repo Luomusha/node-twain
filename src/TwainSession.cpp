@@ -533,7 +533,7 @@ TW_UINT16 TwainSession::setCallback() {
     }
     TW_CALLBACK callback = {0};
     callback.RefCon = 0;
-    callback.CallBackProc = (TW_MEMREF) &this->DSMCallback;
+    callback.CallBackProc = (TW_MEMREF) &this->dsmCallback;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF) &callback, &source);
     return rc;
 }
