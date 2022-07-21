@@ -457,6 +457,20 @@ TW_UINT16 TwainSession::openDS() {
     return rc;
 }
 
+TW_UINT16 TwainSession::closeDS() {
+    TW_UINT16 rc = TWRC_FAILURE;
+    if(state != 4) {
+        status.ConditionCode = TWCC_SEQERROR;
+        rc = TWRC_FAILURE;
+        std::cout << "CloseDS Failed" << std::endl;
+    }
+    rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_CLOSEDS, (TW_MEMREF) pSource);
+    if(rc == TWRC_SUCCESS) {
+        state = 3;
+    }
+    return rc;
+}
+
 TW_UINT16 TwainSession::getCap(TW_CAPABILITY &cap) {
     if (state < 4) {
         std::cout << "You need to open a data source first." << std::endl;
