@@ -68,6 +68,7 @@ private:
     TW_IMAGEINFO imageInfo;
     TW_USERINTERFACE ui;
     static Napi::FunctionReference callback;
+    static Napi::Env env;
 
     /**
      * state 1 -> 2
