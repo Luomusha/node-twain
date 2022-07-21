@@ -49,10 +49,10 @@ describe('twain', () => {
 
         const callback = (message) => {
             console.log("callback MSG:", message)
+            app.scan()
         }
         app.addEventListener(callback)
 
-        const result = await app.test()
         console.log(result);
         app.enableDataSource()
     })
