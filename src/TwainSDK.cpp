@@ -254,9 +254,6 @@ Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-
-    std::this_thread::sleep_for(std::chrono::seconds(12));
-
     session.scan(TWSX_MEMORY);
     return Napi::Boolean::New(env, true);
 }
