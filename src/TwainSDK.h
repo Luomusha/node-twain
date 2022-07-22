@@ -40,28 +40,4 @@ private:
     TwainSession session;
 };
 
-
-class TwainWorker : public Napi::AsyncWorker {
-public:
-    TwainWorker(Napi::Function& callback, std::string& echo)
-            : AsyncWorker(callback), echo(echo) {}
-
-    ~TwainWorker() {}
-    // This code will be executed on the worker thread
-    void Execute() override {
-        // Need to simulate cpu heavy task
-//        std::this_thread::sleep_for(std::chrono::seconds(1));
-        std::cout << "async thread--------" << std::endl;
-    }
-
-    void OnOK() override {
-        Napi::HandleScope scope(Env());
-        Callback().Call({Env().Null(), Napi::String::New(Env(), echo)});
-    }
-
-private:
-    std::string echo;
-};
-
-
 #endif //NODE_TWAIN_TWAINSDK_H
