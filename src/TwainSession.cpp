@@ -463,7 +463,7 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
     fileXfer.FileName[6] = 'f';
 
     while (bPendingXfers) {
-        rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer);
+        rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer, pSource);
         if (rc != TWRC_SUCCESS) {
             std::cerr << "Error while trying to setup the file transfer" << std::endl;
             break;
