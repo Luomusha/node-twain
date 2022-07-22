@@ -454,6 +454,13 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
 
 //    TW_STR255 str;
 //    snprintf((char *)fileXfer.FileName, str);
+    fileXfer.FileName[0] = 'i';
+    fileXfer.FileName[1] = 'm';
+    fileXfer.FileName[2] = '.';
+    fileXfer.FileName[3] = 't';
+    fileXfer.FileName[4] = 'i';
+    fileXfer.FileName[5] = 'f';
+    fileXfer.FileName[6] = 'f';
 
     while (bPendingXfers) {
         rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer);
