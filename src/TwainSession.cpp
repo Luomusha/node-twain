@@ -333,7 +333,7 @@ TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
     std::cout << "After message:" << message << std::endl;
     // todo 轮训/callback取到MSG
     if (message == MSG_XFERREADY) {
-        state = 6
+        state = 6;
     }
     return rc;
 };
