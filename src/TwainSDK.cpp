@@ -272,6 +272,7 @@ TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW
     std::cout << "Trigger callback" << std::endl;
     switch(uiMSG) {
         case MSG_XFERREADY:
+            std::cout << "Callback:" << "MSG_XFERREADY" << std::endl;
             break;
     }
     return TWRC_SUCCESS;
