@@ -3,6 +3,7 @@
   "version": "0.0.6",
   "description": "A TWAIN library for nodejs.",
   "main": "index.js",
+  "types": "twain.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/luomusha/node-twain.git"
