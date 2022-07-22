@@ -315,7 +315,7 @@ TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
     if (rc == TWRC_SUCCESS) {
         state = 5;
     }
-    std::cout << "message:" << message << std::endll;
+    std::cout << "message:" << message << std::endl;
 
     return rc;
 };
