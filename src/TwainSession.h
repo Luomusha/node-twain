@@ -19,7 +19,6 @@
 typedef void *HWND;
 #endif
 
-
 #define LIBRARY "/Library/Frameworks/TWAINDSM.framework/Versions/Current/TWAINDSM"
 
 class TwainSession {
@@ -28,7 +27,6 @@ public:
     std::vector <TW_IDENTITY> sources;
     TW_IDENTITY source;                 //set Source by user
     TW_UINT16 state = 1;
-    static TW_UINT16 message;
 
     void fillIdentity(TW_IDENTITY id);
 
@@ -134,9 +132,6 @@ private:
     static float fix32ToFloat(const TW_FIX32& fix32);
 
     static TW_FIX32 floatToFix32(float floater);
-
-    static TW_UINT16 dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData);
-
 };
 
 

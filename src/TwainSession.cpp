@@ -4,6 +4,19 @@
 #include <napi.h>
 #include "TwainSession.h"
 
+TW_UINT16 message;
+
+TW_UINT16 dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
+    std::cout << "Trigger callback" << std::endl;
+    switch(uiMSG) {
+        case MSG_XFERREADY:
+            std::cout << "Callback:" << "MSG_XFERREADY" << std::endl;
+            message = uiMSG;
+            break;
+    }
+    return TWRC_SUCCESS;
+}
+
 void TwainSession::fillIdentity(TW_IDENTITY id) {
     identity = id;
 }
