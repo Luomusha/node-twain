@@ -1,20 +1,20 @@
 type TW_VERSION = {
-    MajorNum: number
-    MinorNum: number
-    Language: number
-    Country: number
-    Info: string
+    majorNum: number
+    minorNum: number
+    language: number
+    country: number
+    info: string
 }
 
 type TW_IDENTITY = {
-    Id: null | string
-    Version: TW_VERSION
-    ProtocolMajor: number
-    ProtocolMinor: number
-    SupportedGroups: number
-    Manufacturer: string
-    ProductFamily: string
-    ProductName: string
+    id: null | string
+    version: TW_VERSION
+    protocolMajor: number
+    protocolMinor: number
+    supportedGroups: number
+    manufacturer: string
+    productFamily: string
+    productName: string
 }
 
 type CAP_ARRAY = string;
