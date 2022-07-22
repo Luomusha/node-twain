@@ -53,13 +53,9 @@ describe('twain', () => {
         expect(Array.isArray(arrayTest)).toBeTruthy()
         expect(oneValueTest).toBeTruthy()
 
-        const callback = (message) => {
-            console.log("callback MSG:", message)
-            app.scan()
-        }
-        app.addEventListener(callback)
-
+        app.setCallback()
         await app.enableDataSource()
+        app.scan()
     })
 })
 

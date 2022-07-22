@@ -95,7 +95,7 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
     return deferred.Promise();
 }
 
-Napi::Value TwainSDK::addEventListener(const Napi::CallbackInfo &info) {
+Napi::Value TwainSDK::setCallback(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     session.setCallback();
     return Napi::Boolean::New(env, true);

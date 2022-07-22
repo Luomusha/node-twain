@@ -602,7 +602,7 @@ declare module "*twain" {
         setDefaultSource: (name: string) => void;
         openDataSource: () => Promise<void>;
         getCapability: (capability: number) => Capability;
-        addEventListener: (callback: () => void) => void;
+        setCallback: () => void;
         enableDataSource: () => Promise<void>;
         scan: () => void;
     }
