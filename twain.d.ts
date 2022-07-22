@@ -1,4 +1,4 @@
-type TW_VERSION = {
+type Version = {
     majorNum: number
     minorNum: number
     language: number
@@ -6,12 +6,8 @@ type TW_VERSION = {
     info: string
 }
 
-type TW_IDENTITY = {
-    id: null | string
-    version: TW_VERSION
-    protocolMajor: number
-    protocolMinor: number
-    supportedGroups: number
+type Identity = {
+    version: Version
     manufacturer: string
     productFamily: string
     productName: string
@@ -600,7 +596,7 @@ declare module "node-twain" {
     declare class TwainSDK {
         state: number = 1
 
-        constructor(identify: TW_IDENTITY)
+        constructor(identify: Identity)
 
         getDataSources: () => string[];
         getDefaultSource: () => string;
