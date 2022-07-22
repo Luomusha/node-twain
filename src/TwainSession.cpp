@@ -452,8 +452,8 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
     TW_SETUPFILEXFER fileXfer;
     memset(&fileXfer, 0, sizeof(fileXfer));
 
-    SSNPRINTF(fileXfer.FileName, sizeof(fileXfer.FileName), sizeof(fileXfer.FileName), "FROM_SCANNER_F.tiff");
-
+//    TW_STR255 str;
+//    snprintf((char *)fileXfer.FileName, str);
 
     while (bPendingXfers) {
         rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer);
