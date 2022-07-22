@@ -602,6 +602,12 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
     exports.Set("ICAP_JPEGSUBSAMPLING", ICAP_JPEGSUBSAMPLING);
     exports.Set("ACAP_XFERMECH", ACAP_XFERMECH);
 
+    // Transfer
+    exports.Set("TWSX_NATIVE", TWSX_NATIVE);
+    exports.Set("TWSX_FILE", TWSX_FILE);
+    exports.Set("TWSX_MEMORY", TWSX_MEMORY);
+    exports.Set("TWSX_MEMFILE", TWSX_MEMFILE);
+
     return exports;
 }
 

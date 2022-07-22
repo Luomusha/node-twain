@@ -55,7 +55,7 @@ describe('twain', () => {
 
         app.setCallback()
         await app.enableDataSource()
-        app.scan()
+        app.scan(twain.TWSX_FILE)
     })
 })
 

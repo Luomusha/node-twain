@@ -592,6 +592,11 @@ declare module "*twain" {
     const ICAP_JPEGSUBSAMPLING: number
     const ACAP_XFERMECH: number
 
+    const TWSX_NATIVE: number
+    const TWSX_FILE: number
+    const TWSX_MEMORY: number
+    const TWSX_MEMFILE: number
+
     declare class TwainSDK {
         state: number = 1
 
@@ -604,6 +609,6 @@ declare module "*twain" {
         getCapability: (capability: number) => Capability;
         setCallback: () => void;
         enableDataSource: () => Promise<void>;
-        scan: () => void;
+        scan: (transfer: Number) => void;
     }
 }
