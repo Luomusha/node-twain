@@ -469,7 +469,7 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
             break;
         }
 
-        rc = entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, NULL);
+        rc = entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, NULL, pSource);
         if (rc == TWRC_XFERDONE) {
             rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_GETDEFAULT, (TW_MEMREF) &fileXfer, pSource);
             std::cout << "file saved..." << fileXfer.FileName << std::endl;
