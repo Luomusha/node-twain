@@ -321,6 +321,8 @@ TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
         std::cout << "You need to open the DSM first." << std::endl;
         return TWRC_FAILURE;
     }
+    std::cout << "Before message:" << message << std::endl;
+
     ui.ShowUI = false;
     ui.ModalUI = false;
     ui.hParent = hParent;
@@ -328,8 +330,11 @@ TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
     if (rc == TWRC_SUCCESS) {
         state = 5;
     }
-    std::cout << "message:" << message << std::endl;
-
+    std::cout << "After message:" << message << std::endl;
+    // todo 轮训/callback取到MSG
+    if (message == MSG_XFERREADY) {
+        state = 6
+    }
     return rc;
 };
 
