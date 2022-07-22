@@ -43,7 +43,7 @@ interface Configure {
 }
 
 
-declare module "*twain" {
+declare module "node-twain" {
 
     /****************************************************************************
      * Country Constants                                                        *
@@ -600,7 +600,7 @@ declare module "*twain" {
     declare class TwainSDK {
         state: number = 1
 
-        constructor()
+        constructor(identify: TW_IDENTITY)
 
         getDataSources: () => string[];
         getDefaultSource: () => string;
