@@ -446,10 +446,13 @@ void TwainSession::transferNative() {
 
 void TwainSession::transferFile(TW_UINT16 fileFormat) {
     std::cout << "starting a TWSX_FILE transfer..." << std::endl;
+    TW_UINT16 fileformat = TWFF_TIFF;
+
     bool bPendingXfers = true;
     TW_UINT16 rc = TWRC_SUCCESS;
     TW_SETUPFILEXFER fileXfer;
     memset(&fileXfer, 0, sizeof(fileXfer));
+    fileXfer.FileName = "FROM_SCANNER.tiff"
 
     while (bPendingXfers) {
         rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer);
