@@ -4,32 +4,6 @@
 
 #include "TwainSDK.h"
 
-
-
-class TwainWorker : public Napi::AsyncWorker {
-public:
-    TwainWorker(Napi::Function& callback, std::string& echo)
-            : AsyncWorker(callback), echo(echo) {}
-
-    ~TwainWorker() {}
-    // This code will be executed on the worker thread
-    void Execute() override {
-        // Need to simulate cpu heavy task
-//        std::this_thread::sleep_for(std::chrono::seconds(1));
-        std::cout << "async thread--------" << std::endl;
-    }
-
-    void OnOK() override {
-        Napi::HandleScope scope(Env());
-        Callback().Call({Env().Null(), Napi::String::New(Env(), echo)});
-    }
-
-private:
-    std::string echo;
-};
-
-
-
 TwainSDK::TwainSDK(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSDK>(info) {
     Napi::Object configure = info[0].As<Napi::Object>();
 
@@ -123,13 +97,6 @@ Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::addEventListener(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
-
-    Napi::Function cb = info[0].As<Napi::Function>();
-    std::string in = "info[0].As<Napi::String>()";
-    TwainWorker* wk = new TwainWorker(cb, in);
-    wk->Queue();
-
-
     session.setCallback();
     return Napi::Boolean::New(env, true);
 }
@@ -299,6 +266,7 @@ TW_UINT16 TwainSession::dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW
     switch(uiMSG) {
         case MSG_XFERREADY:
             std::cout << "Callback:" << "MSG_XFERREADY" << std::endl;
+            message = uiMSG;
             break;
     }
     return TWRC_SUCCESS;
