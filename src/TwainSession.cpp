@@ -471,12 +471,12 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
 
         rc = entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, NULL);
         if (rc == TWRC_XFERDONE) {
-            rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_GETDEFAULT, (TW_MEMREF) &fileXfer);
+            rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_GETDEFAULT, (TW_MEMREF) &fileXfer, pSource);
             std::cout << "file saved..." << fileXfer.FileName << std::endl;
             std::cout << "Checking to see if there are more images to transfer..." << std::endl;
             TW_PENDINGXFERS pendXfers;
             memset(&pendXfers, 0, sizeof(pendXfers));
-            rc = entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF) &pendXfers);
+            rc = entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF) &pendXfers, pSource);
 
             if (rc == TWRC_SUCCESS) {
                 if (pendXfers.Count == 0) {
