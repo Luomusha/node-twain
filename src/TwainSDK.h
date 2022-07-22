@@ -27,7 +27,7 @@ public:
 
     virtual Napi::Value openDataSource(const Napi::CallbackInfo &info);
 
-    virtual Napi::Value addEventListener(const Napi::CallbackInfo &info);
+    virtual Napi::Value setCallback(const Napi::CallbackInfo &info);
 
     virtual Napi::Value getCapability(const Napi::CallbackInfo &info);
 
