@@ -233,6 +233,37 @@ TW_UINT16 TwainSession::openDS() {
     return rc;
 }
 
+TW_UINT16 TwainSession::openDS(std::string name) {
+    TW_UINT16 rc = TWRC_FAILURE;
+    if (state != 3) {
+        status.ConditionCode = TWCC_SEQERROR;
+        rc = TWRC_FAILURE;
+        std::cout << "OpenDS Failed" << std::endl;
+    }
+    for (auto &it: sources) {
+        if (std::string(reinterpret_cast<char *>(it.ProductName)) == name) {
+            pSource = &it;
+            rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_OPENDS, (TW_MEMREF) pSource);
+            switch (rc) {
+                case TWRC_SUCCESS:
+                    break;
+                case TWRC_FAILURE:
+                    std::cerr << "Failed to get the data source info!" << std::endl;
+                    break;
+            }
+            return rc;
+        }
+    }
+    TW_IDENTITY defaultDS;
+    defaultDS.Id = 0;
+
+    rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_OPENDS, (TW_MEMREF) &defaultDS);
+    if (rc == TWRC_SUCCESS) {
+        state = 4;
+    }
+    return rc;
+}
+
 TW_UINT16 TwainSession::closeDS() {
     TW_UINT16 rc = TWRC_FAILURE;
     if(state != 4) {

@@ -57,6 +57,24 @@ describe('twain', () => {
         await session.enableDataSource()
         session.scan(twain.TWSX_FILE)
     })
+
+    it('dev test"', async () => {
+        const session = new twain.TwainSDK( {
+            productName: "productName!",
+            productFamily: "productFamily!",
+            manufacturer: "manufacturer!",
+            version: {
+                country: twain.TWCY_CHINA,
+                language: twain.TWLG_CHINESE,
+                majorNum: 1,
+                minorNum: 1,
+                info: "v0.0.1",
+            }
+        })
+        console.log("999999")
+        await session.openDataSource("dddd")
+        console.log("HHHHHHHH")
+    })
 })
 
 

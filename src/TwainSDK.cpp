@@ -75,6 +75,14 @@ Napi::Value TwainSDK::getDefaultSource(const Napi::CallbackInfo &info) {
 
 Napi::Value TwainSDK::setDefaultSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
+    if(info.Length() < 1) {
+        Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    if (!info[0].IsString()) {
+        Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
     std::string productName = info[0].As<Napi::String>().Utf8Value();
 
     TW_UINT16 rc = session.setDefaultDS(productName);
@@ -85,14 +93,20 @@ Napi::Value TwainSDK::setDefaultSource(const Napi::CallbackInfo &info) {
 Napi::Value TwainSDK::openDataSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
-
-    TW_UINT16 rc = session.openDS();
-    if (rc == TWRC_SUCCESS) {
-        deferred.Resolve(Napi::String::New(info.Env(), "OK"));
+    
+    TW_UINT16 rc = TWRC_FAILURE;
+    if (info.Length() < 1) {
+        rc = session.openDS();
     } else {
-        deferred.Reject(Napi::String::New(info.Env(), "Reject"));
+        if (!info[0].IsString()) {
+            Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
+            return env.Null();
+        }
+        std::string productName = info[0].As<Napi::String>().Utf8Value();
+        rc = session.openDS(productName);
     }
-    return deferred.Promise();
+   
+    return Napi::Boolean::New(env, rc == TWRC_SUCCESS);
 }
 
 Napi::Value TwainSDK::setCallback(const Napi::CallbackInfo &info) {

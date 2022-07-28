@@ -59,6 +59,7 @@ public:
      * @return
      */
     TW_UINT16 openDS();
+    TW_UINT16 openDS(std::string name);
 
     TW_UINT16 closeDS();
 
