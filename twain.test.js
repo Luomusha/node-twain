@@ -13,7 +13,7 @@ describe('twain', () => {
     })
 
     it('Twain class"', async () => {
-        const app = new twain.TwainSession( {
+        const session = new twain.TwainSDK( {
             productName: "productName!",
             productFamily: "productFamily!",
             manufacturer: "manufacturer!",
@@ -25,30 +25,37 @@ describe('twain', () => {
                 info: "v0.0.1",
             }
         })
-        expect(app.getState()).toBe(3)
+        expect(session.getState()).toBe(3)
 
-        const sources = app.getDataSources()
+        const sources = session.getDataSources()
         console.log(sources)
         expect(sources.length).toBeGreaterThan(0)
 
-        const defaultSource = app.getDefaultSource()
+        const defaultSource = session.getDefaultSource()
         console.log(defaultSource);
         expect(defaultSource).toBeTruthy()
 
-        app.setDefaultSource(sources[0])
+        session.setDefaultSource(sources[0])
 
-        await app.openDataSource()
-        const enumTest = app.getCapability(twain.ICAP_XFERMECH)         // Enum
-        const oneValueTest = app.getCapability(twain.CAP_AUTHOR)  // one value
-        const rangeTest = app.getCapability(twain.ICAP_JPEGQUALITY)        // range
-        const arrayTest = app.getCapability(twain.CAP_SUPPORTEDCAPS)    // array
-        console.log("ENUM     :", JSON.stringify(enumTest))
-        console.log("ONE_VALUE:", JSON.stringify(oneValueTest))
-        console.log("RANGE    :", JSON.stringify(rangeTest))
-        console.log("ARRAY    :", JSON.stringify(arrayTest))
+        await session.openDataSource()
+        const enumTest = session.getCapability(twain.ICAP_XFERMECH)         // Enum
+        const oneValueTest = session.getCapability(twain.CAP_AUTHOR)  // one value
+        const rangeTest = session.getCapability(twain.ICAP_JPEGQUALITY)        // range
+        const arrayTest = session.getCapability(twain.CAP_SUPPORTEDCAPS)    // array
+        expect(enumTest).toHaveProperty("currentIndex")
+        expect(enumTest).toHaveProperty("defaultIndex")
+        expect(enumTest).toHaveProperty("itemList")
+        expect(rangeTest).toHaveProperty("minValue")
+        expect(rangeTest).toHaveProperty("maxValue")
+        expect(rangeTest).toHaveProperty("stepSize")
+        expect(rangeTest).toHaveProperty("defaultValue")
+        expect(rangeTest).toHaveProperty("currentValue")
+        expect(Array.isArray(arrayTest)).toBeTruthy()
+        expect(oneValueTest).toBeTruthy()
 
-        const result = await app.test()
-        console.log(result);
+        session.setCallback()
+        await session.enableDataSource()
+        session.scan(twain.TWSX_FILE)
     })
 })
 

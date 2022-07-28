@@ -1,234 +1,25 @@
 //
 // Created by Lossa on 2022/7/4.
 //
+#include <napi.h>
 #include "TwainSession.h"
 
+TW_UINT16 message;
 
-#include <chrono>
-#include <thread>
-
-
-TwainSession::TwainSession(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSession>(info) {
-    Napi::Object configure = info[0].As<Napi::Object>();
-    Napi::Object version = configure.Get("version").As<Napi::Object>();
-    Napi::Number versionCountry = version.Get("country").As<Napi::Number>();
-    Napi::Number versionLanguage = version.Get("language").As<Napi::Number>();
-    Napi::Number versionMajorNum = version.Get("majorNum").As<Napi::Number>();
-    Napi::Number versionMinorNum = version.Get("minorNum").As<Napi::Number>();
-    Napi::String versionInfo = version.Get("info").As<Napi::String>();
-    Napi::String productName = configure.Get("productName").As<Napi::String>();
-    Napi::String productFamily = configure.Get("productFamily").As<Napi::String>();
-    Napi::String manufacturer = configure.Get("manufacturer").As<Napi::String>();
-
-    identity.Id = 0;
-    identity.Version.Country = versionCountry.Int32Value();
-    identity.Version.Language = versionLanguage.Int32Value();
-    identity.Version.MajorNum = versionMajorNum.Int32Value();
-    identity.Version.MinorNum = versionMinorNum.Int32Value();
-    strcpy((char *) identity.Version.Info, versionInfo.Utf8Value().c_str());
-    strcpy((char *) identity.ProductName, productName.Utf8Value().c_str());
-    strcpy((char *) identity.ProductFamily, productFamily.Utf8Value().c_str());
-    strcpy((char *) identity.Manufacturer, manufacturer.Utf8Value().c_str());
-    identity.SupportedGroups = DF_APP2 | DG_IMAGE | DG_CONTROL;
-    identity.ProtocolMajor = TWON_PROTOCOLMAJOR;
-    identity.ProtocolMinor = TWON_PROTOCOLMINOR;
-
-    parent = NULL;
-
-    Napi::Env env = info.Env();
-    TW_UINT16 rc = TWRC_FAILURE;
-    rc = this->loadDSM();     // state 1 -> state 2
-    rc = this->openDSM();     // state 2 -> state 3
-}
-
-Napi::Value TwainSession::getState(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-
-    return Napi::Number::New(env, this->state);
-}
-
-Napi::Value TwainSession::getDataSources(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-
-    this->getSources();
-
-    uint32_t i = 0;
-    Napi::Array array = Napi::Array::New(env, sources.size());
-    for (auto &&it: sources) {
-        array[i++] = Napi::String::New(env, reinterpret_cast<char *>(it.ProductName));
+TW_UINT16 dsmCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData) {
+    std::cout << "Trigger callback" << std::endl;
+    switch(uiMSG) {
+        case MSG_XFERREADY:
+            std::cout << "Callback:" << "MSG_XFERREADY" << std::endl;
+            message = uiMSG;
+            break;
     }
-    return array;
+    return TWRC_SUCCESS;
 }
 
-Napi::Value TwainSession::getDefaultSource(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-
-    TW_UINT16 rc = this->getDefaultDS();
-    return Napi::String::New(env, reinterpret_cast<char *>(source.ProductName));
+void TwainSession::fillIdentity(TW_IDENTITY id) {
+    identity = id;
 }
-
-Napi::Value TwainSession::setDefaultSource(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-    std::string productName = info[0].As<Napi::String>().Utf8Value();
-
-    TW_UINT16 rc = this->setDefaultDS(productName);
-
-    return Napi::Boolean::New(env, rc == TWRC_SUCCESS);
-}
-
-Napi::Value TwainSession::openDataSource(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-    Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
-
-    TW_UINT16 rc = TWRC_SUCCESS;
-    rc = this->openDS() & rc;
-    rc = this->setCallback() & rc;
-//    if (rc == TWRC_SUCCESS) {
-//        rc = this->enableDS(NULL);
-//    }
-//    std::this_thread::sleep_for(std::chrono::seconds(15));
-//    this->scan();
-    deferred.Resolve(Napi::String::New(info.Env(), "OK"));
-    return deferred.Promise();
-}
-
-Napi::Value TwainSession::getCapability(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-    TW_UINT16 CAP = info[0].As<Napi::Number>().Uint32Value();
-
-    TW_CAPABILITY cap;
-    cap.Cap = CAP;
-
-    TW_UINT16 rc = getCap(cap);
-// The following structures combinations are implimented and found in the TWAIN specifications
-//              BOOL  INT8  INT16  INT32  UINT8  UINT16  UINT32  STR32  STR64  STR128  STR255  STR1024  UNI512  FIX32  FRAME
-// OneValue      x           x      x             x       x       x             x       x                        x      x
-// Array                                   x      x       x       x                                              x      x
-// Enumeration   x           x                    x       x       x                     x                        x      x
-// Range                     x      x             x       x                                                      x
-
-    if (cap.ConType == TWON_RANGE) {
-        pTW_RANGE pRange = (pTW_RANGE) lockMemory(cap.hContainer);
-        Napi::Object rangeResult = Napi::Object::New(env);
-        switch (pRange->ItemType) {
-            case TWTY_INT8:
-            case TWTY_INT16:
-            case TWTY_INT32:
-            case TWTY_UINT8:
-            case TWTY_UINT16:
-            case TWTY_UINT32:
-                rangeResult.Set("minValue", Napi::Number::New(env, pRange->MinValue));
-                rangeResult.Set("maxValue", Napi::Number::New(env, pRange->MaxValue));
-                rangeResult.Set("stepSize", Napi::Number::New(env, pRange->StepSize));
-                rangeResult.Set("defaultValue", Napi::Number::New(env, pRange->DefaultValue));
-                rangeResult.Set("currentValue", Napi::Number::New(env, pRange->CurrentValue));
-//            case TWTY_FIX32:
-//                rangeResult.Set("minValue", Napi::Number::New(env, fix32ToFloat(pRange->MinValue)));
-//                rangeResult.Set("maxValue", Napi::Number::New(env, fix32ToFloat(pRange->MaxValue)));
-//                rangeResult.Set("stepSize", Napi::Number::New(env, fix32ToFloat(pRange->StepSize)));
-//                rangeResult.Set("defaultValue", Napi::Number::New(env, fix32ToFloat(pRange->DefaultValue)));
-//                rangeResult.Set("currentValue", Napi::Number::New(env, fix32ToFloat(pRange->CurrentValue)));
-        }
-        return rangeResult;
-    } else if (cap.ConType == TWON_ARRAY) {
-        pTW_ARRAY pArray = (pTW_ARRAY) lockMemory(cap.hContainer);
-        Napi::Array arr = Napi::Array::New(env, pArray->NumItems);
-        for (TW_UINT32 index = 0; index < pArray->NumItems; index++) {
-            switch (pArray->ItemType) {
-                case TWTY_INT8:
-                case TWTY_INT16:
-                case TWTY_INT32:
-                case TWTY_UINT8:
-                case TWTY_UINT16:
-                case TWTY_UINT32:
-                    arr[index] = Napi::Number::New(env, pArray->ItemList[index]);
-            }
-        }
-        return arr;
-    } else if (cap.ConType == TWON_ONEVALUE) {
-        pTW_ONEVALUE pOne = (pTW_ONEVALUE) lockMemory(cap.hContainer);
-        switch (pOne->ItemType) {
-            case TWTY_INT8:
-            case TWTY_INT16:
-            case TWTY_INT32:
-            case TWTY_UINT8:
-            case TWTY_UINT16:
-            case TWTY_UINT32:
-                return Napi::Number::New(env, pOne->Item);
-            case TWTY_BOOL:
-                return Napi::Boolean::New(env, pOne->Item);
-            case TWTY_STR32: {
-                pTW_STR32 str32 = ((pTW_STR32) (&pOne->Item));
-                return Napi::String::New(env, reinterpret_cast<char *>(str32));
-            }
-            case TWTY_STR64: {
-                pTW_STR64 str64 = ((pTW_STR64) (&pOne->Item));
-                return Napi::String::New(env, reinterpret_cast<char *>(str64));
-            }
-            case TWTY_STR128: {
-                pTW_STR128 str128 = ((pTW_STR128) (&pOne->Item));
-                return Napi::String::New(env, reinterpret_cast<char *>(str128));
-            }
-            case TWTY_STR255: {
-                pTW_STR255 str255 = ((pTW_STR255) (&pOne->Item));
-                return Napi::String::New(env, reinterpret_cast<char *>(str255));
-            }
-        }
-    } else if (cap.ConType == TWON_ENUMERATION) {
-        pTW_ENUMERATION pEnum = (pTW_ENUMERATION) lockMemory(cap.hContainer);
-        Napi::Object enumResult = Napi::Object::New(env);
-        Napi::Array list = Napi::Array::New(env, pEnum->NumItems);
-        switch (pEnum->ItemType) {
-            case TWTY_INT8:
-            case TWTY_INT16:
-            case TWTY_INT32:
-            case TWTY_UINT8:
-            case TWTY_UINT16:
-            case TWTY_UINT32:
-                for (TW_UINT32 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = pEnum->ItemList[index];
-                }
-            case TWTY_BOOL:
-                for (TW_UINT32 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = pEnum->ItemList[index];
-                }
-        }
-        enumResult.Set("currentIndex", pEnum->CurrentIndex);
-        enumResult.Set("defaultIndex", pEnum->DefaultIndex);
-        enumResult.Set("itemList", list);
-        return enumResult;
-    }
-    return Napi::Boolean::New(env, false);
-}
-
-Napi::Value TwainSession::setCapability(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-    TW_UINT16 CAP = info[0].As<Napi::Number>().Uint32Value();
-    TW_UINT16 ITEM_TYPE = info[0].As<Napi::Number>().Uint32Value();
-
-    TW_HANDLE hResult = allocMemory(sizeof(TW_ONEVALUE));
-
-    pTW_ONEVALUE pOne = static_cast<pTW_ONEVALUE>(lockMemory(hResult));
-    pOne->ItemType = ITEM_TYPE;
-    unlockMemory(hResult);
-    pOne = NULL;
-
-    TW_CAPABILITY cap;
-    cap.Cap = CAP;
-    cap.ConType = TWON_ONEVALUE;
-    cap.hContainer = hResult;
-
-    return Napi::Boolean::New(env, true);
-}
-
-Napi::Value TwainSession::test(const Napi::CallbackInfo &info) {
-    Napi::Env env = info.Env();
-
-    return Napi::Boolean::New(env, true);
-}
-
-/************************** ↖ public **************************************/
-/************************** ↙ private **************************************/
 
 TW_UINT16 TwainSession::loadDSM() {
     TW_UINT16 rc = TWRC_FAILURE;
@@ -297,7 +88,13 @@ TW_UINT16 TwainSession::freeDSM() {
 TW_UINT16 TwainSession::entry(TW_UINT32 DG, TW_UINT16 DAT, TW_UINT16 MSG, TW_MEMREF pData, pTW_IDENTITY pDataSource) {
     TW_UINT16 rc = TWRC_FAILURE;
     status.ConditionCode = TWCC_SUCCESS;
-
+    std::cout << "Before:"
+              << convertDataGroupToString(DG)
+              << " / "
+              << convertDataArgTypeToString(DAT)
+              << " / "
+              << convertMessageToString(MSG)
+              << std::endl;
     rc = dsmEntry(&identity, pDataSource, DG, DAT, MSG, pData);
     std::cout << "Triplet:"
               << convertDataGroupToString(DG)
@@ -353,7 +150,7 @@ TW_UINT16 TwainSession::closeDSM() {
 TW_UINT16 TwainSession::getDefaultDS() {
     if (state < 3) {
         std::cout << "You need to open the DSM first." << std::endl;
-        return NULL;
+        return TWRC_FAILURE;
     }
     memset(&source, 0, sizeof(TW_IDENTITY));
     TW_UINT16 rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_GETDEFAULT, (TW_MEMREF) &source);
@@ -369,10 +166,10 @@ TW_UINT16 TwainSession::getDefaultDS() {
 TW_UINT16 TwainSession::setDefaultDS(std::string name) {
     if (state < 3) {
         std::cout << "You need to open the DSM first." << std::endl;
-        return NULL;
+        return TWRC_FAILURE;
     } else if (state > 3) {
         std::cout << "A source has already been opened, please close it first." << std::endl;
-        return NULL;
+        return TWRC_FAILURE;
     }
     TW_UINT16 rc = TWRC_FAILURE;
 
@@ -432,6 +229,51 @@ TW_UINT16 TwainSession::openDS() {
     rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_OPENDS, (TW_MEMREF) pSource);
     if (rc == TWRC_SUCCESS) {
         state = 4;
+    }
+    return rc;
+}
+
+TW_UINT16 TwainSession::openDS(std::string name) {
+    TW_UINT16 rc = TWRC_FAILURE;
+    if (state != 3) {
+        status.ConditionCode = TWCC_SEQERROR;
+        rc = TWRC_FAILURE;
+        std::cout << "OpenDS Failed" << std::endl;
+    }
+    for (auto &it: sources) {
+        if (std::string(reinterpret_cast<char *>(it.ProductName)) == name) {
+            pSource = &it;
+            rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_OPENDS, (TW_MEMREF) pSource);
+            switch (rc) {
+                case TWRC_SUCCESS:
+                    break;
+                case TWRC_FAILURE:
+                    std::cerr << "Failed to get the data source info!" << std::endl;
+                    break;
+            }
+            return rc;
+        }
+    }
+    TW_IDENTITY defaultDS;
+    defaultDS.Id = 0;
+
+    rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_OPENDS, (TW_MEMREF) &defaultDS);
+    if (rc == TWRC_SUCCESS) {
+        state = 4;
+    }
+    return rc;
+}
+
+TW_UINT16 TwainSession::closeDS() {
+    TW_UINT16 rc = TWRC_FAILURE;
+    if(state != 4) {
+        status.ConditionCode = TWCC_SEQERROR;
+        rc = TWRC_FAILURE;
+        std::cout << "CloseDS Failed" << std::endl;
+    }
+    rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_CLOSEDS, (TW_MEMREF) pSource);
+    if(rc == TWRC_SUCCESS) {
+        state = 3;
     }
     return rc;
 }
@@ -499,7 +341,7 @@ TW_UINT16 TwainSession::setCallback() {
     }
     TW_CALLBACK callback = {0};
     callback.RefCon = 0;
-    callback.CallBackProc = (TW_MEMREF) DSMCallback;
+    callback.CallBackProc = (TW_MEMREF) dsmCallback;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_CALLBACK, MSG_REGISTER_CALLBACK, (TW_MEMREF) &callback, &source);
     return rc;
 }
@@ -510,12 +352,19 @@ TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
         std::cout << "You need to open the DSM first." << std::endl;
         return TWRC_FAILURE;
     }
+    std::cout << "Before message:" << message << std::endl;
+
     ui.ShowUI = false;
     ui.ModalUI = false;
     ui.hParent = hParent;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_USERINTERFACE, MSG_ENABLEDS, (TW_MEMREF) &ui, pSource);
     if (rc == TWRC_SUCCESS) {
         state = 5;
+    }
+    std::cout << "After message:" << message << std::endl;
+    // todo 轮训/callback取到MSG
+    if (message == MSG_XFERREADY) {
+        state = 6;
     }
     return rc;
 };
@@ -533,7 +382,7 @@ TW_UINT16 TwainSession::disableDS() {
 }
 
 TW_UINT16 TwainSession::getImageInfo() {
-    memset(&imageInfo, NULL, sizeof(imageInfo));
+    memset(&imageInfo, 0, sizeof(imageInfo));
     std::cout << "Getting the image info..." << std::endl;
     TW_UINT16 rc = entry(DG_IMAGE, DAT_IMAGEINFO, MSG_GET, (TW_MEMREF) &imageInfo, pSource);
     if (rc == TWRC_SUCCESS) {
@@ -549,10 +398,10 @@ TW_UINT16 TwainSession::getImageInfo() {
 }
 
 TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
-//    if(state != 6) {
-//        std::cout << "A scan cannot be initiated unless we are in state 6" << std::endl;
-//        return TWRC_FAILURE;
-//    }
+    if(state != 6) {
+        std::cout << "A scan cannot be initiated unless we are in state 6" << std::endl;
+        return TWRC_FAILURE;
+    }
 
     TW_UINT16 rc = getImageInfo();
     if (TWRC_SUCCESS != rc) {
@@ -628,26 +477,37 @@ void TwainSession::transferNative() {
 
 void TwainSession::transferFile(TW_UINT16 fileFormat) {
     std::cout << "starting a TWSX_FILE transfer..." << std::endl;
+    TW_UINT16 fileformat = TWFF_TIFF;
     bool bPendingXfers = true;
     TW_UINT16 rc = TWRC_SUCCESS;
     TW_SETUPFILEXFER fileXfer;
     memset(&fileXfer, 0, sizeof(fileXfer));
 
+//    TW_STR255 str;
+//    snprintf((char *)fileXfer.FileName, str);
+    fileXfer.FileName[0] = 'i';
+    fileXfer.FileName[1] = 'm';
+    fileXfer.FileName[2] = '.';
+    fileXfer.FileName[3] = 't';
+    fileXfer.FileName[4] = 'i';
+    fileXfer.FileName[5] = 'f';
+    fileXfer.FileName[6] = 'f';
+
     while (bPendingXfers) {
-        rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer);
+        rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer, pSource);
         if (rc != TWRC_SUCCESS) {
             std::cerr << "Error while trying to setup the file transfer" << std::endl;
             break;
         }
 
-        rc = entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, NULL);
+        rc = entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, NULL, pSource);
         if (rc == TWRC_XFERDONE) {
-            rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_GETDEFAULT, (TW_MEMREF) &fileXfer);
+            rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_GETDEFAULT, (TW_MEMREF) &fileXfer, pSource);
             std::cout << "file saved..." << fileXfer.FileName << std::endl;
             std::cout << "Checking to see if there are more images to transfer..." << std::endl;
             TW_PENDINGXFERS pendXfers;
-            memset(&pendXfers, NULL, sizeof(pendXfers));
-            rc = entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF) &pendXfers);
+            memset(&pendXfers, 0, sizeof(pendXfers));
+            rc = entry(DG_CONTROL, DAT_PENDINGXFERS, MSG_ENDXFER, (TW_MEMREF) &pendXfers, pSource);
 
             if (rc == TWRC_SUCCESS) {
                 if (pendXfers.Count == 0) {
@@ -706,7 +566,7 @@ void TwainSession::transferMemory() {
 
         while (true) {
             memcpy(&memXferBuf, &memXferBufferTemplate, sizeof(memXferBufferTemplate));
-            memset(memXferBuf.Memory.TheMem, NULL, memXferBuf.Memory.Length);
+            memset(memXferBuf.Memory.TheMem, 0, memXferBuf.Memory.Length);
 
             rc = entry(DG_IMAGE, DAT_IMAGEFILEXFER, MSG_GET, (TW_MEMREF) &(memXferBuf));
             if (rc == TWRC_SUCCESS || rc == TWRC_XFERDONE) {
@@ -1770,6 +1630,65 @@ const std::string TwainSession::convertConTypeToString(const TW_UINT16 value) {
     return text;
 }
 
+int TwainSession::getTWTypeSize(const TW_UINT16 itemType) {
+    int typeSize = 0;
+
+    switch(itemType)
+    {
+        case TWTY_INT8:
+            typeSize = sizeof(TW_INT8);
+            break;
+        case TWTY_INT16:
+            typeSize = sizeof(TW_INT16);
+            break;
+        case TWTY_INT32:
+            typeSize = sizeof(TW_INT32);
+            break;
+        case TWTY_UINT8:
+            typeSize = sizeof(TW_UINT8);
+            break;
+        case TWTY_UINT16:
+            typeSize = sizeof(TW_UINT16);
+            break;
+        case TWTY_UINT32:
+            typeSize = sizeof(TW_UINT32);
+            break;
+        case TWTY_BOOL:
+            typeSize = sizeof(TW_BOOL);
+            break;
+        case TWTY_FIX32:
+            typeSize = sizeof(TW_FIX32);
+            break;
+        case TWTY_FRAME:
+            typeSize = sizeof(TW_FRAME);
+            break;
+        case TWTY_STR32:
+            typeSize = sizeof(TW_STR32);
+            break;
+        case TWTY_STR64:
+            typeSize = sizeof(TW_STR64);
+            break;
+        case TWTY_STR128:
+            typeSize = sizeof(TW_STR128);
+            break;
+        case TWTY_STR255:
+            typeSize = sizeof(TW_STR255);
+            break;
+        case TWTY_STR1024:
+            typeSize = sizeof(TW_STR1024);
+            break;
+        case TWTY_UNI512:
+            typeSize = sizeof(TW_UNI512);
+            break;
+        case TWTY_HANDLE:
+            typeSize = sizeof(TW_HANDLE);
+            break;
+        default:
+            break;
+    }
+    return typeSize;
+}
+
 TW_FIX32 TwainSession::floatToFix32(float floater) {
     TW_FIX32 fix32;
     TW_BOOL sign = (floater < 0) ? TRUE : FALSE;
@@ -1781,12 +1700,4 @@ TW_FIX32 TwainSession::floatToFix32(float floater) {
 
 float TwainSession::fix32ToFloat(const TW_FIX32& fix32) {
     return float(fix32.Whole) + float(fix32.Frac / 65536.0);
-}
-
-TW_UINT16 FAR PASCAL TwainSession::DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG,
-                          TW_MEMREF pData) {
-    std::cout << "DG :" << convertDataGroupToString(uiDG) << std::endl;
-    std::cout << "DAT:" << convertDataArgTypeToString(uiDAT) << std::endl;
-    std::cout << "MSG:" << convertMessageToString(uiMSG) << std::endl;
-    return TWRC_SUCCESS;
 }

@@ -1,36 +1,34 @@
-type TW_VERSION = {
-    MajorNum: number
-    MinorNum: number
-    Language: number
-    Country: number
-    Info: string
+type Version = {
+    majorNum: number
+    minorNum: number
+    language: number
+    country: number
+    info: string
 }
 
-type TW_IDENTITY = {
-    Id: null | string
-    Version: TW_VERSION
-    ProtocolMajor: number
-    ProtocolMinor: number
-    SupportedGroups: number
-    Manufacturer: string
-    ProductFamily: string
-    ProductName: string
+type Identity = {
+    version: Version
+    manufacturer: string
+    productFamily: string
+    productName: string
 }
 
-type CAP_ARRAY = {
+type CAP_ARRAY = string;
 
-}
-
-type CAP_VALUE = {
-
-}
+type CAP_VALUE = Number[]
 
 type CAP_ENUM = {
-
+    currentIndex: number;
+    defaultIndex: number;
+    itemList: Number[];
 }
 
 type CAP_RANGE = {
-
+    minValue: number;
+    maxvalue: number;
+    stepSize: number;
+    defaultValue: number;
+    currentValue: number;
 }
 
 type Capability = CAP_RANGE | CAP_ENUM | CAP_VALUE | CAP_ARRAY;
@@ -41,7 +39,7 @@ interface Configure {
 }
 
 
-declare module "*twain" {
+declare module "node-twain" {
 
     /****************************************************************************
      * Country Constants                                                        *
@@ -590,16 +588,23 @@ declare module "*twain" {
     const ICAP_JPEGSUBSAMPLING: number
     const ACAP_XFERMECH: number
 
-    declare class TwainSession {
+    const TWSX_NATIVE: number
+    const TWSX_FILE: number
+    const TWSX_MEMORY: number
+    const TWSX_MEMFILE: number
+
+    declare class TwainSDK {
         state: number = 1
 
-        constructor()
+        constructor(identify: Identity)
 
         getDataSources: () => string[];
         getDefaultSource: () => string;
         setDefaultSource: (name: string) => void;
         openDataSource: () => Promise<void>;
         getCapability: (capability: number) => Capability;
-        scan: () => void;
+        setCallback: () => void;
+        enableDataSource: () => Promise<void>;
+        scan: (transfer: Number) => void;
     }
 }

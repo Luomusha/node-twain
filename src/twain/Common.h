@@ -252,7 +252,7 @@
   #define SSTRCAT(d,z,s) strcat(d,s)
   #define SSTRNCPY(d,z,s,m) strncpy(d,s,m)
   #define SGETENV(d,z,n) strcpy(d,getenv(n)?getenv(n):"")
-  inline int SSNPRINTF(char *d, size_t, size_t c, const char *f,...)
+  inline int SSNPRINTF(char *d, size_t z, size_t c, const char *f,...)
   {
       int result;
       va_list valist;

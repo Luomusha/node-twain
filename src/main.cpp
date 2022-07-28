@@ -1,36 +1,43 @@
 #include <assert.h>
-#include "TwainSession.h"
+#include "TwainSDK.h"
 
-
-Napi::Function registerTwainSession(Napi::Env env) {
+Napi::Function registerTwainSDK(Napi::Env env) {
     // This method is used to hook the accessor and method callbacks
-    Napi::Function func = TwainSession::DefineClass(env, "TwainSession", {
-            TwainSession::InstanceMethod<&TwainSession::getState>(
+    Napi::Function func = TwainSDK::DefineClass(env, "TwainSDK", {
+            TwainSDK::InstanceMethod<&TwainSDK::getState>(
                     "getState",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
-            TwainSession::InstanceMethod<&TwainSession::getDataSources>(
+            TwainSDK::InstanceMethod<&TwainSDK::getDataSources>(
                     "getDataSources",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
-            TwainSession::InstanceMethod<&TwainSession::getDefaultSource>(
+            TwainSDK::InstanceMethod<&TwainSDK::getDefaultSource>(
                     "getDefaultSource",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
-            TwainSession::InstanceMethod<&TwainSession::setDefaultSource>(
+            TwainSDK::InstanceMethod<&TwainSDK::setDefaultSource>(
                     "setDefaultSource",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
-            TwainSession::InstanceMethod<&TwainSession::openDataSource>(
+            TwainSDK::InstanceMethod<&TwainSDK::openDataSource>(
                     "openDataSource",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
-            TwainSession::InstanceMethod<&TwainSession::getCapability>(
+            TwainSDK::InstanceMethod<&TwainSDK::getCapability>(
                     "getCapability",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
-            TwainSession::InstanceMethod<&TwainSession::test>(
-                    "test",
+            TwainSDK::InstanceMethod<&TwainSDK::setCallback>(
+                    "setCallback",
+                    static_cast<napi_property_attributes>(napi_writable | napi_configurable)
+            ),
+            TwainSDK::InstanceMethod<&TwainSDK::enableDataSource>(
+                    "enableDataSource",
+                    static_cast<napi_property_attributes>(napi_writable | napi_configurable)
+            ),
+            TwainSDK::InstanceMethod<&TwainSDK::scan>(
+                    "scan",
                     static_cast<napi_property_attributes>(napi_writable | napi_configurable)
             ),
     });
@@ -46,7 +53,7 @@ Napi::Function registerTwainSession(Napi::Env env) {
 }
 
 Napi::Object init(Napi::Env env, Napi::Object exports) {
-    exports.Set("TwainSession", registerTwainSession(env));
+    exports.Set("TwainSDK", registerTwainSDK(env));
 
     /****************************************************************************
      * Country Constants                                                        *
@@ -595,8 +602,13 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
     exports.Set("ICAP_JPEGSUBSAMPLING", ICAP_JPEGSUBSAMPLING);
     exports.Set("ACAP_XFERMECH", ACAP_XFERMECH);
 
+    // Transfer
+    exports.Set("TWSX_NATIVE", TWSX_NATIVE);
+    exports.Set("TWSX_FILE", TWSX_FILE);
+    exports.Set("TWSX_MEMORY", TWSX_MEMORY);
+    exports.Set("TWSX_MEMFILE", TWSX_MEMFILE);
+
     return exports;
 }
-
 
 NODE_API_MODULE(NODE_GYP_MODULE_NAME, init)

@@ -5,7 +5,6 @@
 #ifndef NODE_TWAIN_TWAINAPP_H
 #define NODE_TWAIN_TWAINAPP_H
 
-#include <napi.h>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -20,51 +19,16 @@
 typedef void *HWND;
 #endif
 
-
 #define LIBRARY "/Library/Frameworks/TWAINDSM.framework/Versions/Current/TWAINDSM"
 
-
-class TwainSession : public Napi::ObjectWrap<TwainSession> {
+class TwainSession {
 
 public:
-    TwainSession(const Napi::CallbackInfo &info);
-
-    virtual Napi::Value getState(const Napi::CallbackInfo &info);
-
-    virtual Napi::Value getDataSources(const Napi::CallbackInfo &info);
-
-    virtual Napi::Value getDefaultSource(const Napi::CallbackInfo &info);
-
-    virtual Napi::Value setDefaultSource(const Napi::CallbackInfo &info);
-
-    virtual Napi::Value openDataSource(const Napi::CallbackInfo &info);
-
-    virtual Napi::Value getCapability(const Napi::CallbackInfo &info);
-
-    virtual Napi::Value setCapability(const Napi::CallbackInfo &info);
-
-    virtual Napi::Value test(const Napi::CallbackInfo &info);
-
-private:
-    TW_INT16 state = 1;
-    TW_IDENTITY identity;
-    TW_IDENTITY source;                 //set Source by user
-    pTW_IDENTITY pSource;               //set source by DS
-    HWND parent;
     std::vector <TW_IDENTITY> sources;
+    TW_IDENTITY source;                 //set Source by user
+    TW_UINT16 state = 1;
 
-#ifdef TWH_CMP_MSC
-    HMODULE
-#else
-    void *
-#endif
-            pDSMLibrary = 0;
-    DSMENTRYPROC dsmEntry = 0;
-    TW_ENTRYPOINT gDSMEntry = {0};
-    TW_STATUS status;
-    TW_UINT32 instanceID;
-    TW_IMAGEINFO imageInfo;
-    TW_USERINTERFACE ui;
+    void fillIdentity(TW_IDENTITY id);
 
     /**
      * state 1 -> 2
@@ -86,7 +50,7 @@ private:
 
     TW_UINT16 getDefaultDS();
 
-    TW_UINT16 setDefaultDS(std::string index);
+    TW_UINT16 setDefaultDS(std::string name);
 
     TW_UINT16 getSources();
 
@@ -95,6 +59,7 @@ private:
      * @return
      */
     TW_UINT16 openDS();
+    TW_UINT16 openDS(std::string name);
 
     TW_UINT16 closeDS();
 
@@ -118,12 +83,6 @@ private:
 
     TW_UINT16 scan(TW_UINT32 mech);
 
-    void transferNative();
-    void transferFile(TW_UINT16 fileFormat);
-    void transferMemory();
-
-    bool parseCapability(TW_CAPABILITY *pCap, TW_UINT32& val);
-
     TW_HANDLE allocMemory(TW_UINT32 _size);
 
     void freeMemory(TW_HANDLE _hMemory);
@@ -131,6 +90,31 @@ private:
     TW_MEMREF lockMemory(TW_HANDLE _hMemory);
 
     void unlockMemory(TW_HANDLE _hMemory);
+
+    int getTWTypeSize(const TW_UINT16 itemType);
+
+private:
+#ifdef TWH_CMP_MSC
+    HMODULE
+#else
+    void *
+#endif
+            pDSMLibrary = 0;
+    DSMENTRYPROC dsmEntry = 0;
+    TW_ENTRYPOINT gDSMEntry = {0};
+    TW_IDENTITY identity;
+    pTW_IDENTITY pSource;               //set source by DS
+    HWND parent;
+
+    TW_STATUS status;
+    TW_IMAGEINFO imageInfo;
+    TW_USERINTERFACE ui;
+
+    void transferNative();
+    void transferFile(TW_UINT16 fileFormat);
+    void transferMemory();
+
+    bool parseCapability(TW_CAPABILITY *pCap, TW_UINT32& val);
 
     static const std::string convertReturnCodeToString(const TW_UINT16 value);
 
@@ -149,9 +133,6 @@ private:
     static float fix32ToFloat(const TW_FIX32& fix32);
 
     static TW_FIX32 floatToFix32(float floater);
-
-    static TW_UINT16 FAR PASCAL DSMCallback(pTW_IDENTITY pOrigin, pTW_IDENTITY pDest, TW_UINT32 uiDG, TW_UINT16 uiDAT, TW_UINT16 uiMSG, TW_MEMREF pData);
-
 };
 
 
