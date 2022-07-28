@@ -15,7 +15,7 @@ NOTE: Project is under develop.
 ```typescript
 import {Twain} from "node-twain"
 
-const app = new twain.TwainSession( {
+const app = new twain.TwainSDK( {
     productName: "productName!",
     productFamily: "productFamily!",
     manufacturer: "manufacturer!",
