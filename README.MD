@@ -2,7 +2,7 @@
 
 A nodejs library for TWAIN using node-addon-api.
 
-NOTE: Project is under develop.
+NOTE: Project is under develop. PR is welcomed, any issue is welcomed.
 
 ## Installation
 ``$ npm install node-twain``
