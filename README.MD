@@ -41,5 +41,17 @@ const arrayTest = app.getCapability(twain.CAP_SUPPORTEDCAPS)    // array
 app.scan();
 ```
 
+## Data Source Support
+According to [twain‘s github](https://github.com/twain/twain-dsm/blob/master/TWAIN_DSM/README.txt),
+Data Source Manager looks for data sources in
+
+|OperaSystem|directory|
+|---|---|
+|windows|C:\Windows\twain_32 C:\Windows\twain_32|
+|Linux | /usr/local/lib/twain|
+|MacOS| /Library/Image Capture/TWAIN Data Sources|
+
+Install your scanner driver and confirm whether your scanner support TWAIN or not.
+
 ## License
 MIT License. See the LICENSE file.

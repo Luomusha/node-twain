@@ -2,6 +2,9 @@
   "name": "node-twain",
   "version": "0.0.11",
   "description": "A TWAIN library for nodejs.",
+  "keywords": ["TWAIN", "node-twain", "scan", "scanner"],
+  "author": "Luomusha",
+  "license": "ISC",
   "main": "index.js",
   "types": "twain.d.ts",
   "repository": {
@@ -13,9 +16,6 @@
     "tsc": "tsc -w",
     "test": "jest --watch"
   },
-  "keywords": [],
-  "author": "Luomusha",
-  "license": "ISC",
   "devDependencies": {
     "@types/bindings": "^1.5.1",
     "@types/jest": "^28.1.4",
