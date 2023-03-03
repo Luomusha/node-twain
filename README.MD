@@ -73,6 +73,8 @@ If there is no file "TWAINDSM.dll", copy the "TWAINDSM.dll" file into the System
 2. Confirm the scanner driver is installed.
 For example, my scanner is SP-1120N.
 
+**PS: The scanner MUST support TWAIN protocal.**
+
 ![scanner_driver.jpg](assets/scanner_driver.jpg)
 
 
