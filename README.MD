@@ -55,3 +55,31 @@ Install your scanner driver and confirm whether your scanner support TWAIN or no
 
 ## License
 MIT License. See the LICENSE file.
+
+
+## Setup Develop Environment
+
+### Windows
+
+1. Confirm Twain Datasource Manage is supported. Checkout this directory:
+
+```
+C:\Windows\System32
+```
+
+If there is no file "TWAINDSM.dll", copy the "TWAINDSM.dll" file into the System32 directory.
+
+
+2. Confirm the scanner driver is installed.
+For example, my scanner is SP-1120N.
+
+![scanner_driver.jpg](assets/scanner_driver.jpg)
+
+
+3. Run the test script
+
+```
+npm run test
+```
+
+This command will search *.test.js, then run the `twain.test.js` script.
