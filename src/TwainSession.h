@@ -99,7 +99,7 @@ private:
 #else
     void *
 #endif
-            pDSMLibrary = 0;
+    pDSMLibrary = 0;
     DSMENTRYPROC dsmEntry = 0;
     TW_ENTRYPOINT gDSMEntry = {0};
     TW_IDENTITY identity;

@@ -38,11 +38,11 @@ TW_UINT16 TwainSession::loadDSM() {
 #ifdef TWH_CMP_MSC
     WCHAR szPath[MAX_PATH];
     if(GetModuleFileNameW(pDSMLibrary, szPath, MAX_PATH)) {
-//        if(!VerifyEmbeddedSignature(szPath)) {
-//            // Only continue using the DSM from trusted distributor
-//            freeDSM();
-//            return rc;
-//        }
+       if(!VerifyEmbeddedSignature(szPath)) {
+           // Only continue using the DSM from trusted distributor
+           freeDSM();
+           return rc;
+       }
     }
 #endif //TWH_CMP_MSC
 
