@@ -61,6 +61,12 @@ MIT License. See the LICENSE file.
 
 ### Windows
 
+- Python is required for node-gyp is used to build package.
+
+- Vitual Studio is required.
+
+Steps
+
 1. Confirm Twain Datasource Manage is supported. Checkout this directory:
 
 ```
