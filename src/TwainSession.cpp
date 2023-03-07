@@ -478,6 +478,9 @@ void TwainSession::transferNative() {
 void TwainSession::transferFile(TW_UINT16 fileFormat) {
     std::cout << "starting a TWSX_FILE transfer..." << std::endl;
     TW_UINT16 fileformat = TWFF_TIFF;
+    std::string ext = convertImageFileFormatToExt(fileFormat);
+    std::cout << ext << std::endl;
+
     bool bPendingXfers = true;
     TW_UINT16 rc = TWRC_SUCCESS;
     TW_SETUPFILEXFER fileXfer;
