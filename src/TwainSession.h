@@ -65,6 +65,8 @@ public:
 
     TW_UINT16 getCap(TW_CAPABILITY& Cap);
 
+    TW_UINT16 getCurrentCap(TW_CAPABILITY &cap);
+
     TW_UINT16 setCap(TW_UINT16 Cap, const int value, TW_UINT16 type);
 
     TW_UINT16 setCallback();

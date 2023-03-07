@@ -288,6 +288,23 @@ TW_UINT16 TwainSession::getCap(TW_CAPABILITY &cap) {
     return rc;
 }
 
+TW_UINT16 TwainSession::getCurrentCap(TW_CAPABILITY &cap) {
+     if (state < 4) {
+        std::cout << "You need to open a data source first." << std::endl;
+        return TWCC_SEQERROR;
+    }
+    if (cap.hContainer != NULL) {
+        freeMemory(cap.hContainer);
+        cap.hContainer = NULL;
+    }
+
+    cap.ConType = TW_ONEVALUE;
+    TW_UINT16 rc = entry(DG_CONTROL, DAT_CAPABILITY, MSG_GETCURRENT, (TW_MEMREF) &cap, pSource);
+    std::cout << "CAP_ORDER:" << convertCapToString(cap.Cap) << std::endl;
+    std::cout << "CAP_TYPE :" << convertConTypeToString(cap.ConType) << std::endl;
+    return rc;
+}
+
 TW_UINT16 TwainSession::setCap(TW_UINT16 Cap, const int value, TW_UINT16 type) {
     TW_UINT16 rc = TWRC_FAILURE;
     TW_CAPABILITY cap;
@@ -411,9 +428,9 @@ TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
             TW_CAPABILITY cap;
             cap.Cap = ICAP_IMAGEFILEFORMAT;
             cap.hContainer = 0;
-            getCap(cap);
+            getCurrentCap(cap);
             pTW_ENUMERATION pEnum = (pTW_ENUMERATION)lockMemory(cap.hContainer);
-
+            std::cout << pEnum.Item << std::endl;
             transferFile(fileformat);
             break;
         }
