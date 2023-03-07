@@ -1609,6 +1609,61 @@ const std::string TwainSession::convertCapToString(const TW_UINT16 value) {
     return text;
 }
 
+const std::string TwainSession::convertImageFileFormatToExt(const TW_UINT16 value) {
+    const char *text = NULL;
+    switch (value) {
+        case TWFF_PICT:
+            text = ".pict";
+            break;
+        case TWFF_BMP:
+            text = ".bmp";
+            break;
+        case TWFF_XBM:
+            text = ".xbm";
+            break;
+        case TWFF_JFIF:
+            text = ".jpeg";
+            break;
+        case TWFF_FPX:
+            text = ".fpx";
+            break;
+        case TWFF_TIFF:
+        case TWFF_TIFFMULTI:
+            text = ".tiff";
+            break;
+        case TWFF_PNG:
+            text = ".png";
+            break;
+        case TWFF_SPIFF:
+            text = ".spiff";
+            break;
+        case TWFF_EXIF:
+            text = ".exif";
+            break;
+        case TWFF_JP2:
+            text = ".jp2";
+            break;
+        case TWFF_JPN:
+            text = ".jpn";
+            break;
+        case TWFF_JPX:
+            text = ".jpx";
+            break;
+        case TWFF_DEJAVU:
+            text = ".dejavu";
+            break;
+        case TWFF_PDF:
+        case TWFF_PDFA:
+        case TWFF_PDFA2:
+            text = ".pdf";
+            break;
+
+        default:
+            text = "Unknown";
+    }
+    return text;
+}
+
 const std::string TwainSession::convertConTypeToString(const TW_UINT16 value) {
     const char *text = NULL;
     switch (value) {

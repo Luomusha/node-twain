@@ -130,6 +130,8 @@ private:
 
     static const std::string convertConTypeToString(const TW_UINT16 value);
 
+    static const std::string convertImageFileFormatToExt(const TW_UINT16 value);
+
     static float fix32ToFloat(const TW_FIX32& fix32);
 
     static TW_FIX32 floatToFix32(float floater);
