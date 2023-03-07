@@ -503,15 +503,19 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
     memset(&fileXfer, 0, sizeof(fileXfer));
     std::cout << "Test::" << fileXfer.Format << std::endl;
     fileXfer.Format = fileFormat;
+
+
+    std::string filePastname = "image" ;
+    strcpy(fileXfer.FileName, (filePastname + ext).c_str());
 //    TW_STR255 str;
 //    snprintf((char *)fileXfer.FileName, str);
-    fileXfer.FileName[0] = 'i';
-    fileXfer.FileName[1] = 'm';
-    fileXfer.FileName[2] = '.';
-    fileXfer.FileName[3] = 't';
-    fileXfer.FileName[4] = 'i';
-    fileXfer.FileName[5] = 'f';
-    fileXfer.FileName[6] = 'f';
+    // fileXfer.FileName[0] = 'i';
+    // fileXfer.FileName[1] = 'm';
+    // fileXfer.FileName[2] = '.';
+    // fileXfer.FileName[3] = 't';
+    // fileXfer.FileName[4] = 'i';
+    // fileXfer.FileName[5] = 'f';
+    // fileXfer.FileName[6] = 'f';
 
     while (bPendingXfers) {
         rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer, pSource);
