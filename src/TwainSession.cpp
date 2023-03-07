@@ -298,7 +298,7 @@ TW_UINT16 TwainSession::getCurrentCap(TW_CAPABILITY &cap) {
         cap.hContainer = NULL;
     }
 
-    cap.ConType = TW_ONEVALUE;
+    cap.ConType = TWON_ONEVALUE;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_CAPABILITY, MSG_GETCURRENT, (TW_MEMREF) &cap, pSource);
     std::cout << "CAP_ORDER:" << convertCapToString(cap.Cap) << std::endl;
     std::cout << "CAP_TYPE :" << convertConTypeToString(cap.ConType) << std::endl;
@@ -424,14 +424,15 @@ TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
             break;
         }
         case TWSX_FILE: {
-            TW_UINT16 fileformat = TWFF_TIFF;
             TW_CAPABILITY cap;
             cap.Cap = ICAP_IMAGEFILEFORMAT;
             cap.hContainer = 0;
-            getCurrentCap(cap);
-            pTW_ENUMERATION pEnum = (pTW_ENUMERATION)lockMemory(cap.hContainer);
-            std::cout << pEnum.Item << std::endl;
-            transferFile(fileformat);
+            TW_UINT16 rc = getCurrentCap(cap);
+            if( rc == TWRC_SUCCESS){
+                pTW_ONEVALUE pEnum = (pTW_ONEVALUE)lockMemory(cap.hContainer);
+                std::cout << pEnum->Item << std::endl;
+                transferFile(pEnum->Item);
+            }
             break;
         }
         case TWSX_MEMORY: {
@@ -493,7 +494,6 @@ void TwainSession::transferNative() {
 
 void TwainSession::transferFile(TW_UINT16 fileFormat) {
     std::cout << "starting a TWSX_FILE transfer..." << std::endl;
-    TW_UINT16 fileformat = TWFF_TIFF;
     std::string ext = convertImageFileFormatToExt(fileFormat);
     std::cout << ext << std::endl;
 
@@ -501,7 +501,8 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
     TW_UINT16 rc = TWRC_SUCCESS;
     TW_SETUPFILEXFER fileXfer;
     memset(&fileXfer, 0, sizeof(fileXfer));
-
+    std::cout << "Test::" << fileXfer.Format << std::endl;
+    fileXfer.Format = fileFormat;
 //    TW_STR255 str;
 //    snprintf((char *)fileXfer.FileName, str);
     fileXfer.FileName[0] = 'i';
