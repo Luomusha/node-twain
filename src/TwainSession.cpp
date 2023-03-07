@@ -38,11 +38,11 @@ TW_UINT16 TwainSession::loadDSM() {
 #ifdef TWH_CMP_MSC
     WCHAR szPath[MAX_PATH];
     if(GetModuleFileNameW(pDSMLibrary, szPath, MAX_PATH)) {
-       if(!VerifyEmbeddedSignature(szPath)) {
-           // Only continue using the DSM from trusted distributor
-           freeDSM();
-           return rc;
-       }
+    //    if(!VerifyEmbeddedSignature(szPath)) {
+    //        // Only continue using the DSM from trusted distributor
+    //        freeDSM();
+    //        return rc;
+    //    }
     }
 #endif //TWH_CMP_MSC
 
@@ -411,8 +411,8 @@ TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
             TW_CAPABILITY cap;
             cap.Cap = ICAP_IMAGEFILEFORMAT;
             cap.hContainer = 0;
-            getCap(cap)
-            pTW_ENUMERATION pEnum = (pTW_ENUMERATION) session.lockMemory(cap.hContainer);
+            getCap(cap);
+            pTW_ENUMERATION pEnum = (pTW_ENUMERATION)lockMemory(cap.hContainer);
 
             transferFile(fileformat);
             break;

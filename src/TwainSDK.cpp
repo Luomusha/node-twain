@@ -203,31 +203,39 @@ Napi::Value TwainSDK::getCapability(const Napi::CallbackInfo &info) {
         pTW_ENUMERATION pEnum = (pTW_ENUMERATION) session.lockMemory(cap.hContainer);
         Napi::Object enumResult = Napi::Object::New(env);
         Napi::Array list = Napi::Array::New(env, pEnum->NumItems);
+
         switch (pEnum->ItemType) {
             case TWTY_INT8:
-                for (TWTY_UINT16 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = ((TW_UINT8)(pEnum->ItemList))[index];
+                for (TW_UINT8 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = pEnum->ItemList[index];
                 }
+                break;
             case TWTY_INT16:
-                for (TWTY_UINT16 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = ((TW_UINT16)(pEnum->ItemList))[index];
+                for (TW_UINT8 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = pEnum->ItemList[index];
                 }
+                break;
             case TWTY_INT32:
-                for (TWTY_UINT16 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = ((TW_UINT32)(pEnum->ItemList))[index];
+                for (TW_UINT8 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = pEnum->ItemList[index];
                 }
+                break;
             case TWTY_UINT8:
-                for (TWTY_UINT16 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = ((TW_UINT8)(pEnum->ItemList))[index];
+                for (TW_UINT8 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = pEnum->ItemList[index];
                 }
+                break;
             case TWTY_UINT16:
-                for (TWTY_UINT16 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = ((TW_UINT16)(pEnum->ItemList))[index];
+                std::cout << "pEnum->ItemType" << pEnum->ItemType << std::endl;
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_UINT16)(&pEnum->ItemList))[index];
                 }
+                break;
             case TWTY_UINT32:
                 for (TW_UINT32 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = ((TW_UINT32)(pEnum->ItemList))[index];
+                    list[index] = pEnum->ItemList[index];
                 }
+                break;
             case TWTY_BOOL:
                 for (TW_UINT32 index = 0; index < pEnum->NumItems; index++) {
                     list[index] = pEnum->ItemList[index];
