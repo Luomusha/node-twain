@@ -206,38 +206,37 @@ Napi::Value TwainSDK::getCapability(const Napi::CallbackInfo &info) {
 
         switch (pEnum->ItemType) {
             case TWTY_INT8:
-                for (TW_UINT8 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = pEnum->ItemList[index];
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_INT8)(&pEnum->ItemList))[index];
                 }
                 break;
             case TWTY_INT16:
-                for (TW_UINT8 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = pEnum->ItemList[index];
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_INT16)(&pEnum->ItemList))[index];
                 }
                 break;
             case TWTY_INT32:
-                for (TW_UINT8 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = pEnum->ItemList[index];
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_INT32)(&pEnum->ItemList))[index];
                 }
                 break;
             case TWTY_UINT8:
-                for (TW_UINT8 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = pEnum->ItemList[index];
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_UINT8)(&pEnum->ItemList))[index];
                 }
                 break;
             case TWTY_UINT16:
-                std::cout << "pEnum->ItemType" << pEnum->ItemType << std::endl;
                 for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
                     list[index] = ((pTW_UINT16)(&pEnum->ItemList))[index];
                 }
                 break;
             case TWTY_UINT32:
-                for (TW_UINT32 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = pEnum->ItemList[index];
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_UINT32)(&pEnum->ItemList))[index];
                 }
                 break;
             case TWTY_BOOL:
-                for (TW_UINT32 index = 0; index < pEnum->NumItems; index++) {
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
                     list[index] = pEnum->ItemList[index];
                 }
         }
