@@ -88,13 +88,6 @@ TW_UINT16 TwainSession::freeDSM() {
 TW_UINT16 TwainSession::entry(TW_UINT32 DG, TW_UINT16 DAT, TW_UINT16 MSG, TW_MEMREF pData, pTW_IDENTITY pDataSource) {
     TW_UINT16 rc = TWRC_FAILURE;
     status.ConditionCode = TWCC_SUCCESS;
-    std::cout << "Before:"
-              << convertDataGroupToString(DG)
-              << " / "
-              << convertDataArgTypeToString(DAT)
-              << " / "
-              << convertMessageToString(MSG)
-              << std::endl;
     rc = dsmEntry(&identity, pDataSource, DG, DAT, MSG, pData);
     std::cout << "Triplet:"
               << convertDataGroupToString(DG)
@@ -415,6 +408,12 @@ TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
         }
         case TWSX_FILE: {
             TW_UINT16 fileformat = TWFF_TIFF;
+            TW_CAPABILITY cap;
+            cap.Cap = ICAP_IMAGEFILEFORMAT;
+            cap.hContainer = 0;
+            getCap(cap)
+            pTW_ENUMERATION pEnum = (pTW_ENUMERATION) session.lockMemory(cap.hContainer);
+
             transferFile(fileformat);
             break;
         }
