@@ -407,7 +407,7 @@ TW_UINT16 TwainSession::getImageInfo() {
     return rc;
 }
 
-TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
+TW_UINT16 TwainSession::scan(TW_UINT32 mech, std::string fileName) {
     if(state != 6) {
         std::cout << "A scan cannot be initiated unless we are in state 6" << std::endl;
         return TWRC_FAILURE;
@@ -431,7 +431,7 @@ TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
             if( rc == TWRC_SUCCESS){
                 pTW_ONEVALUE pEnum = (pTW_ONEVALUE)lockMemory(cap.hContainer);
                 std::cout << pEnum->Item << std::endl;
-                transferFile(pEnum->Item);
+                transferFile(pEnum->Item, fileName);
             }
             break;
         }
@@ -492,7 +492,7 @@ void TwainSession::transferNative() {
     return;
 }
 
-void TwainSession::transferFile(TW_UINT16 fileFormat) {
+void TwainSession::transferFile(TW_UINT16 fileFormat, std::string fileName) {
     std::cout << "starting a TWSX_FILE transfer..." << std::endl;
     std::string ext = convertImageFileFormatToExt(fileFormat);
     std::cout << ext << std::endl;
@@ -503,10 +503,8 @@ void TwainSession::transferFile(TW_UINT16 fileFormat) {
     memset(&fileXfer, 0, sizeof(fileXfer));
     std::cout << "Test::" << fileXfer.Format << std::endl;
     fileXfer.Format = fileFormat;
-
-
-    std::string filePastname = "image" ;
-    strcpy(fileXfer.FileName, (filePastname + ext).c_str());
+    strcpy(fileXfer.FileName, (fileName + ext).c_str());
+    
 //    TW_STR255 str;
 //    snprintf((char *)fileXfer.FileName, str);
     // fileXfer.FileName[0] = 'i';

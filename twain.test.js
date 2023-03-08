@@ -77,7 +77,7 @@ describe('twain', () => {
 
         session.setCallback()
         await session.enableDataSource()
-        session.scan(twain.TWSX_FILE)
+        session.scan(twain.TWSX_FILE, "imageName")
     })
 })
 

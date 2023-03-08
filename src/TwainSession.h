@@ -83,7 +83,7 @@ public:
 
     TW_UINT16 getImageInfo();
 
-    TW_UINT16 scan(TW_UINT32 mech);
+    TW_UINT16 scan(TW_UINT32 mech, std::string fileName);
 
     TW_HANDLE allocMemory(TW_UINT32 _size);
 
@@ -113,7 +113,7 @@ private:
     TW_USERINTERFACE ui;
 
     void transferNative();
-    void transferFile(TW_UINT16 fileFormat);
+    void transferFile(TW_UINT16 fileFormat,std::string);
     void transferMemory();
 
     bool parseCapability(TW_CAPABILITY *pCap, TW_UINT32& val);
