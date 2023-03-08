@@ -38,11 +38,11 @@ TW_UINT16 TwainSession::loadDSM() {
 #ifdef TWH_CMP_MSC
     WCHAR szPath[MAX_PATH];
     if(GetModuleFileNameW(pDSMLibrary, szPath, MAX_PATH)) {
-//        if(!VerifyEmbeddedSignature(szPath)) {
-//            // Only continue using the DSM from trusted distributor
-//            freeDSM();
-//            return rc;
-//        }
+    //    if(!VerifyEmbeddedSignature(szPath)) {
+    //        // Only continue using the DSM from trusted distributor
+    //        freeDSM();
+    //        return rc;
+    //    }
     }
 #endif //TWH_CMP_MSC
 
@@ -88,13 +88,6 @@ TW_UINT16 TwainSession::freeDSM() {
 TW_UINT16 TwainSession::entry(TW_UINT32 DG, TW_UINT16 DAT, TW_UINT16 MSG, TW_MEMREF pData, pTW_IDENTITY pDataSource) {
     TW_UINT16 rc = TWRC_FAILURE;
     status.ConditionCode = TWCC_SUCCESS;
-    std::cout << "Before:"
-              << convertDataGroupToString(DG)
-              << " / "
-              << convertDataArgTypeToString(DAT)
-              << " / "
-              << convertMessageToString(MSG)
-              << std::endl;
     rc = dsmEntry(&identity, pDataSource, DG, DAT, MSG, pData);
     std::cout << "Triplet:"
               << convertDataGroupToString(DG)
@@ -295,6 +288,23 @@ TW_UINT16 TwainSession::getCap(TW_CAPABILITY &cap) {
     return rc;
 }
 
+TW_UINT16 TwainSession::getCurrentCap(TW_CAPABILITY &cap) {
+     if (state < 4) {
+        std::cout << "You need to open a data source first." << std::endl;
+        return TWCC_SEQERROR;
+    }
+    if (cap.hContainer != NULL) {
+        freeMemory(cap.hContainer);
+        cap.hContainer = NULL;
+    }
+
+    cap.ConType = TWON_ONEVALUE;
+    TW_UINT16 rc = entry(DG_CONTROL, DAT_CAPABILITY, MSG_GETCURRENT, (TW_MEMREF) &cap, pSource);
+    std::cout << "CAP_ORDER:" << convertCapToString(cap.Cap) << std::endl;
+    std::cout << "CAP_TYPE :" << convertConTypeToString(cap.ConType) << std::endl;
+    return rc;
+}
+
 TW_UINT16 TwainSession::setCap(TW_UINT16 Cap, const int value, TW_UINT16 type) {
     TW_UINT16 rc = TWRC_FAILURE;
     TW_CAPABILITY cap;
@@ -397,7 +407,7 @@ TW_UINT16 TwainSession::getImageInfo() {
     return rc;
 }
 
-TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
+TW_UINT16 TwainSession::scan(TW_UINT32 mech, std::string fileName) {
     if(state != 6) {
         std::cout << "A scan cannot be initiated unless we are in state 6" << std::endl;
         return TWRC_FAILURE;
@@ -414,8 +424,15 @@ TW_UINT16 TwainSession::scan(TW_UINT32 mech) {
             break;
         }
         case TWSX_FILE: {
-            TW_UINT16 fileformat = TWFF_TIFF;
-            transferFile(fileformat);
+            TW_CAPABILITY cap;
+            cap.Cap = ICAP_IMAGEFILEFORMAT;
+            cap.hContainer = 0;
+            TW_UINT16 rc = getCurrentCap(cap);
+            if( rc == TWRC_SUCCESS){
+                pTW_ONEVALUE pEnum = (pTW_ONEVALUE)lockMemory(cap.hContainer);
+                std::cout << pEnum->Item << std::endl;
+                transferFile(pEnum->Item, fileName);
+            }
             break;
         }
         case TWSX_MEMORY: {
@@ -475,23 +492,28 @@ void TwainSession::transferNative() {
     return;
 }
 
-void TwainSession::transferFile(TW_UINT16 fileFormat) {
+void TwainSession::transferFile(TW_UINT16 fileFormat, std::string fileName) {
     std::cout << "starting a TWSX_FILE transfer..." << std::endl;
-    TW_UINT16 fileformat = TWFF_TIFF;
+    std::string ext = convertImageFileFormatToExt(fileFormat);
+    std::cout << ext << std::endl;
+
     bool bPendingXfers = true;
     TW_UINT16 rc = TWRC_SUCCESS;
     TW_SETUPFILEXFER fileXfer;
     memset(&fileXfer, 0, sizeof(fileXfer));
-
+    std::cout << "Test::" << fileXfer.Format << std::endl;
+    fileXfer.Format = fileFormat;
+    strcpy(fileXfer.FileName, (fileName + ext).c_str());
+    
 //    TW_STR255 str;
 //    snprintf((char *)fileXfer.FileName, str);
-    fileXfer.FileName[0] = 'i';
-    fileXfer.FileName[1] = 'm';
-    fileXfer.FileName[2] = '.';
-    fileXfer.FileName[3] = 't';
-    fileXfer.FileName[4] = 'i';
-    fileXfer.FileName[5] = 'f';
-    fileXfer.FileName[6] = 'f';
+    // fileXfer.FileName[0] = 'i';
+    // fileXfer.FileName[1] = 'm';
+    // fileXfer.FileName[2] = '.';
+    // fileXfer.FileName[3] = 't';
+    // fileXfer.FileName[4] = 'i';
+    // fileXfer.FileName[5] = 'f';
+    // fileXfer.FileName[6] = 'f';
 
     while (bPendingXfers) {
         rc = entry(DG_CONTROL, DAT_SETUPFILEXFER, MSG_SET, (TW_MEMREF) &fileXfer, pSource);
@@ -1603,6 +1625,61 @@ const std::string TwainSession::convertCapToString(const TW_UINT16 value) {
         case ACAP_XFERMECH:
             text = "ACAP_XFERMECH";
             break;
+        default:
+            text = "Unknown";
+    }
+    return text;
+}
+
+const std::string TwainSession::convertImageFileFormatToExt(const TW_UINT16 value) {
+    const char *text = NULL;
+    switch (value) {
+        case TWFF_PICT:
+            text = ".pict";
+            break;
+        case TWFF_BMP:
+            text = ".bmp";
+            break;
+        case TWFF_XBM:
+            text = ".xbm";
+            break;
+        case TWFF_JFIF:
+            text = ".jpeg";
+            break;
+        case TWFF_FPX:
+            text = ".fpx";
+            break;
+        case TWFF_TIFF:
+        case TWFF_TIFFMULTI:
+            text = ".tiff";
+            break;
+        case TWFF_PNG:
+            text = ".png";
+            break;
+        case TWFF_SPIFF:
+            text = ".spiff";
+            break;
+        case TWFF_EXIF:
+            text = ".exif";
+            break;
+        case TWFF_JP2:
+            text = ".jp2";
+            break;
+        case TWFF_JPN:
+            text = ".jpn";
+            break;
+        case TWFF_JPX:
+            text = ".jpx";
+            break;
+        case TWFF_DEJAVU:
+            text = ".dejavu";
+            break;
+        case TWFF_PDF:
+        case TWFF_PDFA:
+        case TWFF_PDFA2:
+            text = ".pdf";
+            break;
+
         default:
             text = "Unknown";
     }

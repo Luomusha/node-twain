@@ -121,7 +121,7 @@ Napi::Value TwainSDK::getCapability(const Napi::CallbackInfo &info) {
 
     TW_CAPABILITY cap;
     cap.Cap = CAP;
-
+    cap.hContainer = 0;
     TW_UINT16 rc = session.getCap(cap);
 // The following structures combinations are implimented and found in the TWAIN specifications
 //              BOOL  INT8  INT16  INT32  UINT8  UINT16  UINT32  STR32  STR64  STR128  STR255  STR1024  UNI512  FIX32  FRAME
@@ -203,18 +203,40 @@ Napi::Value TwainSDK::getCapability(const Napi::CallbackInfo &info) {
         pTW_ENUMERATION pEnum = (pTW_ENUMERATION) session.lockMemory(cap.hContainer);
         Napi::Object enumResult = Napi::Object::New(env);
         Napi::Array list = Napi::Array::New(env, pEnum->NumItems);
+
         switch (pEnum->ItemType) {
             case TWTY_INT8:
-            case TWTY_INT16:
-            case TWTY_INT32:
-            case TWTY_UINT8:
-            case TWTY_UINT16:
-            case TWTY_UINT32:
-                for (TW_UINT32 index = 0; index < pEnum->NumItems; index++) {
-                    list[index] = pEnum->ItemList[index];
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_INT8)(&pEnum->ItemList))[index];
                 }
+                break;
+            case TWTY_INT16:
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_INT16)(&pEnum->ItemList))[index];
+                }
+                break;
+            case TWTY_INT32:
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_INT32)(&pEnum->ItemList))[index];
+                }
+                break;
+            case TWTY_UINT8:
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_UINT8)(&pEnum->ItemList))[index];
+                }
+                break;
+            case TWTY_UINT16:
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_UINT16)(&pEnum->ItemList))[index];
+                }
+                break;
+            case TWTY_UINT32:
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
+                    list[index] = ((pTW_UINT32)(&pEnum->ItemList))[index];
+                }
+                break;
             case TWTY_BOOL:
-                for (TW_UINT32 index = 0; index < pEnum->NumItems; index++) {
+                for (TW_UINT16 index = 0; index < pEnum->NumItems; index++) {
                     list[index] = pEnum->ItemList[index];
                 }
         }
@@ -269,6 +291,7 @@ Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
 Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     TW_UINT16 transfer = info[0].As<Napi::Number>().Uint32Value();
-    session.scan(transfer);
+    std::string fileName = info[1].As<Napi::String>().Utf8Value();
+    session.scan(transfer, fileName);
     return Napi::Boolean::New(env, true);
 }

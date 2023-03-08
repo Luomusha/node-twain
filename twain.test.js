@@ -13,7 +13,7 @@ describe('twain', () => {
     })
 
     it('Twain class"', async () => {
-        const session = new twain.TwainSDK( {
+        const session = new twain.TwainSDK({
             productName: "productName!",
             productFamily: "productFamily!",
             manufacturer: "manufacturer!",
@@ -53,9 +53,31 @@ describe('twain', () => {
         expect(Array.isArray(arrayTest)).toBeTruthy()
         expect(oneValueTest).toBeTruthy()
 
+        const c0 = session.getCapability(twain.CAP_XFERCOUNT)
+        const c1 = session.getCapability(twain.ICAP_PIXELTYPE)
+        const c2 = session.getCapability(twain.ICAP_XFERMECH)
+        const c3 = session.getCapability(twain.ICAP_IMAGEFILEFORMAT)
+        const c4 = session.getCapability(twain.ICAP_COMPRESSION)
+        const c5 = session.getCapability(twain.ICAP_UNITS)
+        const c6 = session.getCapability(twain.ICAP_BITDEPTH)
+        const c7 = session.getCapability(twain.ICAP_XRESOLUTION)
+        const c8 = session.getCapability(twain.ICAP_YRESOLUTION)
+        const c9 = session.getCapability(twain.ICAP_FRAMES)
+
+        console.log("CAP_XFERCOUNT", c0)
+        console.log("ICAP_PIXELTYPE", c1)
+        console.log("ICAP_XFERMECH", c2)
+        console.log("ICAP_IMAGEFILEFORMAT", c3)
+        console.log("ICAP_COMPRESSION", c4)
+        console.log("ICAP_UNITS", c5)
+        console.log("ICAP_BITDEPTH", c6)
+        console.log("ICAP_XRESOLUTION", c7)
+        console.log("ICAP_YRESOLUTION", c8)
+        console.log("ICAP_FRAMES", c9)
+
         session.setCallback()
         await session.enableDataSource()
-        session.scan(twain.TWSX_FILE)
+        session.scan(twain.TWSX_FILE, "imageName")
     })
 })
 
