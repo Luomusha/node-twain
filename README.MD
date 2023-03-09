@@ -13,7 +13,7 @@ NOTE: Project is under develop.
 ## Usage
 
 ```typescript
-import {Twain} from "node-twain"
+import {twain} from "node-twain"
 
 const app = new twain.TwainSDK( {
     productName: "productName!",
@@ -38,7 +38,9 @@ const oneValueTest = app.getCapability(twain.CAP_AUTHOR)        // one value
 const rangeTest = app.getCapability(twain.ICAP_JPEGQUALITY)     // range
 const arrayTest = app.getCapability(twain.CAP_SUPPORTEDCAPS)    // array
 
-app.scan();
+session.setCallback()
+await session.enableDataSource()
+app.scan(twain.TWSX_FILE, fileName);  //fileName:完整路径名  
 ```
 
 ## Data Source Support

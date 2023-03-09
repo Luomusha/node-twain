@@ -30,7 +30,8 @@ describe('twain', () => {
         const sources = session.getDataSources()
         console.log(sources)
         expect(sources.length).toBeGreaterThan(0)
-
+        
+        // pSource
         const defaultSource = session.getDefaultSource()
         console.log(defaultSource);
         expect(defaultSource).toBeTruthy()
@@ -77,8 +78,48 @@ describe('twain', () => {
 
         session.setCallback()
         await session.enableDataSource()
-        session.scan(twain.TWSX_FILE, "imageName")
+        session.scan(twain.TWSX_FILE, "C:\\Users\\A11200321050133\\Documents\\imageName")
     })
 })
 
 
+describe('quick', () => {
+
+
+    it('quick class"', async () => {
+        const session = new twain.TwainSDK({
+            productName: "productName!",
+            productFamily: "productFamily!",
+            manufacturer: "manufacturer!",
+            version: {
+                country: twain.TWCY_CHINA,
+                language: twain.TWLG_CHINESE,
+                majorNum: 1,
+                minorNum: 1,
+                info: "v0.0.1",
+            }
+        })
+        
+        // sources
+        // const sources = session.getDataSources()
+        // expect(Array.isArray(sources)).toBeTruthy()
+        // source
+        const defaultSource = session.getDefaultSource()
+        console.log(defaultSource)
+
+        // pSource
+        session.setDefaultSource(defaultSource)
+
+        // pSource, sources
+        session.openDataSource(defaultSource)
+
+        // source
+        session.setCallback()
+
+        // pSource
+        session.enableDataSource()
+
+        // pSource
+        session.scan(twain.TWSX_FILE, "C:\Users\A11200321050133\Documents\Scanned Documents")
+    })
+})
