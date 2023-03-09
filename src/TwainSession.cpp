@@ -142,7 +142,7 @@ TW_UINT16 TwainSession::closeDSM() {
 
 TW_UINT16 TwainSession::getDefaultDS() {
     if (state < 3) {
-        std::cout << "You need to open the DSM first." << std::endl;
+        std::cout << "getDefaultDS :: You need to open the DSM first." << state << std::endl;
         return TWRC_FAILURE;
     }
     memset(&source, 0, sizeof(TW_IDENTITY));
@@ -158,7 +158,7 @@ TW_UINT16 TwainSession::getDefaultDS() {
 
 TW_UINT16 TwainSession::setDefaultDS(std::string name) {
     if (state < 3) {
-        std::cout << "You need to open the DSM first." << std::endl;
+        std::cout << "setDefaultDS :: You need to open the DSM first." << state << std::endl;
         return TWRC_FAILURE;
     } else if (state > 3) {
         std::cout << "A source has already been opened, please close it first." << std::endl;
@@ -186,7 +186,7 @@ TW_UINT16 TwainSession::setDefaultDS(std::string name) {
 TW_UINT16 TwainSession::getSources() {
     TW_UINT16 rc = TWRC_FAILURE;
     if (state < 3) {
-        std::cout << "You need to open the DSM first." << std::endl;
+        std::cout << "getSources :: You need to open the DSM first." << state << std::endl;
         return rc;
     }
     assert(true == sources.empty());
@@ -220,6 +220,7 @@ TW_UINT16 TwainSession::openDS() {
         std::cout << "OpenDS Failed" << std::endl;
     }
     rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_OPENDS, (TW_MEMREF) pSource);
+    std::cout << "openDS:rc:::::" << rc << std::endl;
     if (rc == TWRC_SUCCESS) {
         state = 4;
     }
@@ -233,12 +234,14 @@ TW_UINT16 TwainSession::openDS(std::string name) {
         rc = TWRC_FAILURE;
         std::cout << "OpenDS Failed" << std::endl;
     }
+
     for (auto &it: sources) {
         if (std::string(reinterpret_cast<char *>(it.ProductName)) == name) {
             pSource = &it;
             rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_OPENDS, (TW_MEMREF) pSource);
             switch (rc) {
                 case TWRC_SUCCESS:
+                    state = 4;
                     break;
                 case TWRC_FAILURE:
                     std::cerr << "Failed to get the data source info!" << std::endl;
@@ -251,6 +254,7 @@ TW_UINT16 TwainSession::openDS(std::string name) {
     defaultDS.Id = 0;
 
     rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_OPENDS, (TW_MEMREF) &defaultDS);
+    std::cout << "openDS:rc:::::" << rc << std::endl;
     if (rc == TWRC_SUCCESS) {
         state = 4;
     }
@@ -357,9 +361,14 @@ TW_UINT16 TwainSession::setCallback() {
 }
 
 TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
-    if (state != 4) {
+    if (state < 3) {
         status.ConditionCode = TWCC_SEQERROR;
-        std::cout << "You need to open the DSM first." << std::endl;
+        std::cout << "enableDS :: You need to open the DSM first." << state << std::endl;
+        return TWRC_FAILURE;
+    }
+    if (state < 4) {
+        status.ConditionCode = TWCC_SEQERROR;
+        std::cout << "enableDS :: You need to open the DS first." << state << std::endl;
         return TWRC_FAILURE;
     }
     std::cout << "Before message:" << message << std::endl;

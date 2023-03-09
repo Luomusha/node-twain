@@ -601,7 +601,7 @@ declare module "node-twain" {
         getDataSources: () => string[];
         getDefaultSource: () => string;
         setDefaultSource: (name: string) => void;
-        openDataSource: () => Promise<void>;
+        openDataSource: (sourceName?: string) => Promise<void>;
         getCapability: (capability: number) => Capability;
         setCallback: () => void;
         enableDataSource: () => Promise<void>;

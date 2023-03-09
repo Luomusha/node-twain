@@ -24,7 +24,7 @@ typedef void *HWND;
 class TwainSession {
 
 public:
-    std::vector <TW_IDENTITY> sources;
+    std::vector <TW_IDENTITY> sources;  // sources list. Used by getSources/openDS/setDefaultDS
     TW_IDENTITY source;                 //set Source by user
     TW_UINT16 state = 1;
 
