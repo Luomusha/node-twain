@@ -36,6 +36,11 @@ TwainSDK::TwainSDK(const Napi::CallbackInfo &info) : Napi::ObjectWrap<TwainSDK>(
 
     session.loadDSM();     // state 1 -> state 2
     session.openDSM();     // state 2 -> state 3
+
+    session.getSources();   // sources init
+    session.getDefaultDS(); // source init
+    Napi::String defaultName = Napi::String::New(info.Env(), reinterpret_cast<char *>(session.source.ProductName));
+    session.setDefaultDS(defaultName); // pSource init
 }
 
 TwainSDK::~TwainSDK() {

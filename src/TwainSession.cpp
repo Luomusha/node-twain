@@ -235,7 +235,6 @@ TW_UINT16 TwainSession::openDS(std::string name) {
         std::cout << "OpenDS Failed" << std::endl;
     }
 
-    getSources();
     for (auto &it: sources) {
         if (std::string(reinterpret_cast<char *>(it.ProductName)) == name) {
             pSource = &it;

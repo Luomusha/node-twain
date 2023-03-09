@@ -85,7 +85,6 @@ describe('twain', () => {
 
 describe('quick', () => {
 
-
     it('quick class"', async () => {
         const session = new twain.TwainSDK({
             productName: "productName!",
@@ -108,7 +107,7 @@ describe('quick', () => {
         console.log(defaultSource)
 
         // pSource
-        session.setDefaultSource(defaultSource)
+        // session.setDefaultSource(defaultSource)
 
         // pSource, sources
         session.openDataSource(defaultSource)
