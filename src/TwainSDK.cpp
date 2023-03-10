@@ -284,7 +284,7 @@ Napi::Value TwainSDK::setCapability(const Napi::CallbackInfo &info) {
 Napi::Value TwainSDK::enableDataSource(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
-    TW_UINT16 rc = session.enableDS(NULL);
+    TW_UINT16 rc = session.enableDS();
     if (rc == TWRC_SUCCESS) {
         deferred.Resolve(Napi::String::New(info.Env(), "OK"));
     } else {
@@ -298,7 +298,7 @@ Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
     TW_UINT16 transfer = info[0].As<Napi::Number>().Uint32Value();
     std::string fileName = info[1].As<Napi::String>().Utf8Value();
 
-    session.enableDS(NULL);
+    session.enableDS();
     session.scan(transfer, fileName);
     session.disableDS();
     return Napi::Boolean::New(env, true);

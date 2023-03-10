@@ -364,7 +364,7 @@ TW_UINT16 TwainSession::setCallback() {
     return rc;
 }
 
-TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
+TW_UINT16 TwainSession::enableDS() {
     if (state < 3) {
         status.ConditionCode = TWCC_SEQERROR;
         std::cout << "enableDS :: You need to open the DSM first." << state << std::endl;
@@ -384,7 +384,7 @@ TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
 
     ui.ShowUI = false;
     ui.ModalUI = false;
-    ui.hParent = hParent;
+    ui.hParent = NULL;
     TW_UINT16 rc = entry(DG_CONTROL, DAT_USERINTERFACE, MSG_ENABLEDS, (TW_MEMREF) &ui, pSource);
     if (rc == TWRC_SUCCESS) {
         state = 5;
