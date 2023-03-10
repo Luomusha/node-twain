@@ -29,9 +29,9 @@ const app = new twain.TwainSDK( {
 })
 const sources = app.getDataSources()            // ["PaperStream IP SP-1120N #2"]
 const defaultSource = app.getDefaultSource()    // "PaperStream IP SP-1120N #2"
-app.setDefaultSource(sources[0])
+app.setDefaultSource(sources[0])    //set which scanner to work
 
-await app.openDataSource()
+await app.openDataSource(defaultSource) //args 
 
 const enumTest = app.getCapability(twain.ICAP_XFERMECH)         // Enum
 const oneValueTest = app.getCapability(twain.CAP_AUTHOR)        // one value
@@ -39,8 +39,7 @@ const rangeTest = app.getCapability(twain.ICAP_JPEGQUALITY)     // range
 const arrayTest = app.getCapability(twain.CAP_SUPPORTEDCAPS)    // array
 
 session.setCallback()
-await session.enableDataSource()
-app.scan(twain.TWSX_FILE, fileName);  //fileName:完整路径名  
+app.scan(twain.TWSX_FILE, fileName);  //fileName:Full path
 ```
 
 ## Data Source Support

@@ -297,6 +297,9 @@ Napi::Value TwainSDK::scan(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     TW_UINT16 transfer = info[0].As<Napi::Number>().Uint32Value();
     std::string fileName = info[1].As<Napi::String>().Utf8Value();
+
+    session.enableDS(NULL);
     session.scan(transfer, fileName);
+    session.disableDS();
     return Napi::Boolean::New(env, true);
 }

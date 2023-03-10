@@ -189,7 +189,11 @@ TW_UINT16 TwainSession::getSources() {
         std::cout << "getSources :: You need to open the DSM first." << state << std::endl;
         return rc;
     }
-    assert(true == sources.empty());
+    
+    // assert(true == sources.empty());
+    if(true != sources.empty()){
+        sources.clear();
+    }
 
     TW_IDENTITY temp;
     rc = entry(DG_CONTROL, DAT_IDENTITY, MSG_GETFIRST, (TW_MEMREF) &temp);
@@ -369,6 +373,11 @@ TW_UINT16 TwainSession::enableDS(TW_HANDLE hParent) {
     if (state < 4) {
         status.ConditionCode = TWCC_SEQERROR;
         std::cout << "enableDS :: You need to open the DS first." << state << std::endl;
+        return TWRC_FAILURE;
+    }
+    if (state == 5) {
+        status.ConditionCode = TWCC_SEQERROR;
+        std::cout << "enableDS :: You have enabled the DS." << state << std::endl;
         return TWRC_FAILURE;
     }
     std::cout << "Before message:" << message << std::endl;
