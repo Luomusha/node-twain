@@ -1,6 +1,6 @@
 {
   "name": "node-twain",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "description": "A TWAIN library for nodejs.",
   "keywords": [
     "TWAIN",
