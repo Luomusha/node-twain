@@ -799,7 +799,7 @@ typedef struct {
 #define TWFE_GENERAL             0
 #define TWFE_PHOTO               1
 
-/* ICAP_IMAGEFILEFORMAT values *TWCC_
+/* ICAP_IMAGEFILEFORMAT values */
 #define TWFF_TIFF                0
 #define TWFF_PICT                1
 #define TWFF_BMP                 2
