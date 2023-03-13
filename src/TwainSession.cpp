@@ -402,7 +402,7 @@ TW_UINT16 TwainSession::disableDS() {
         std::cout << "You need to enable the data source first" << std::endl;
         return TWRC_FAILURE;
     }
-    TW_UINT16 rc = entry(DG_CONTROL, DAT_USERINTERFACE, MSG_DISABLEDS, (TW_MEMREF) &ui);
+    TW_UINT16 rc = entry(DG_CONTROL, DAT_USERINTERFACE, MSG_DISABLEDS, (TW_MEMREF) &ui,pSource);
     if (rc == TWRC_SUCCESS) {
         state = 4;
     }
