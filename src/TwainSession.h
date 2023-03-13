@@ -73,11 +73,9 @@ public:
 
     /**
      * state 4 -> 5
-     * @param hParent
-     * @param ShowUI
      * @return
      */
-    TW_UINT16 enableDS(TW_HANDLE hParent);
+    TW_UINT16 enableDS();
 
     TW_UINT16 disableDS();
 

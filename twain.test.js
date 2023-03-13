@@ -112,6 +112,7 @@ describe('quick', () => {
         // pSource, sources
         session.openDataSource(defaultSource)
 
+        // session.openDataSource(defaultSource)
         // source
         session.setCallback()
 
@@ -120,5 +121,8 @@ describe('quick', () => {
 
         // pSource
         session.scan(twain.TWSX_FILE, "C:\\Users\\A11200321050133\\Documents\\Scanned Documents\\imageFromScanner")
+
+        
+        session.scan(twain.TWSX_FILE, "C:\\Users\\A11200321050133\\Documents\\Scanned Documents\\imageFromScanner2")
     })
 })
