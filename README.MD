@@ -2,6 +2,13 @@
 
 A nodejs library for TWAIN using node-addon-api.
 
+## 此项目处在开发阶段。目前开发者手头已经没有扫描仪了，已经搁置了开发进程。
+
+## 如果有人可以捐助一台扫描仪，开发者会考虑继续维护。
+
+## 目前TWAIN官方没有提供Mac版本的server端。所以没办法进一步支持Mac
+
+
 NOTE: Project is under develop. PR is welcomed, any issue is welcomed.
 
 ## Installation
